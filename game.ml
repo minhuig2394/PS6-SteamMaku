@@ -2,9 +2,6 @@ open Definitions
 open Constants
 open Util
 
-
-(*need to find a better way to keep track fo UFOs + bullets
-  need to keep track of their positions and velocities*)
 type game = 
     {redlife : int;
      redscore : int;
@@ -16,22 +13,22 @@ type game =
      bluecharge : int;
      bluepos : position;
      bluefoc : bool;
-     numbullet : int;
-     bulletpos : (int * int) list;
+     redbullets : (bullet_type * position * velocity) list;
+     bluebullets : (bullet_type * position * velocity) list;
      timer : int;
-     (*version 2 only*)
+     (*version 2 only
      redbombs : int;
      bluebombs : int;
      redinvinc : int;
      blueinvinc : int;
-     (*version 4 only*)
+     version 4 only
      redpower : int;
      bluepower : int;
      ufotimer : int;
      numufo : int;
      numpower : int;
-     ufopos : (int * int) list;
-     powerpos : (int * int) list;
+     ufopos : position list;
+     powerpos : power list;*)
    }
 
 
@@ -51,22 +48,22 @@ let init_game () : game =
      (((float_of_int c_BOARD_WIDTH) /. 8.) *. 7., 
       (float_of_int cBOARD_HEIGHT) /. 2.)
      init.bluefoc = false;
-     init.numbullet = 0;
-     init.bulletpos = [];
+     init.redbullets = [];
+     init.bluebullets = [];
      init.timer = cTIME_LIMIT;
-     (*
+     (*version 2 only
      init.redbombs = cINITIAL_BOMBS;
      init.bluebombs = cINITIAL_BOMBS;
      init.redinvinc = cBOMB_DURATION;
      init.blueinvinc = cBOMB_DURATION;
+     version 4 only
      init.redpower = 0;
      init.bluepower = 0;
      init.ufotimer : int;
      init.numufo = 0;
      init.numpower = 0;
-     init.ufopos : (int * int) list;
-     init.powerpos : (int * int) list;
-     *)
+     init.ufopos : position list;
+     init.powerpos : position list;*)
    } in
   init
 
