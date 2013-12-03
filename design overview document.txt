@@ -1,0 +1,41 @@
+names: Daphne Wang, Min Hui Guan 
+netids: dw443, mg797
+
+
+Summary : 
+
+	Summarize the rest of your overview. Anything you mention here should be described in more detail in the rest of your document.
+
+Instructions:
+	 Include instructions on how to compile and run your game.
+
+Design and implementation:
+	 Document and discuss the choices you made in order to
+	 meet the game specification. There should be several aspects of this documentation.
+
+• Modules. Discuss how you split the program into modules, what purpose these modules serve, and any invariants maintained. Also discuss their interfaces.
+• Architecture. Discuss how your modules interact with each other, how they com- municate with each other, and how they depend on each other.
+• Code design. Discuss any notable algorithms employed by your program, and which data structures you used. Mention any tradeoffs you made between code simplicity and efficiency.
+• Implementation. Discuss the implementation strategy you used (top-down, bottom- up). Also include any challenges you ran into while coding, any code reuse or revi- sion you employed, and what the rough division of work was between your group members.
+You need to give the course staff enough information so that we can understand your program without looking at the source code. In doing so, you should convince us that you gave careful consideration to the construction of your program.
+
+Testing: 
+	Describe your test plan, and discuss any issues that you ran into while carrying out this test plan. Are you confident that your testing gives good enough coverage of all possible scenarios? Remember that testing is not something that should only be done at the end, but rather, it should be done incrementally, as you write parts of the program. You need to convince the staff that you exercised due diligence in validating your program.
+
+Extensibility:
+	 How easily could your code be extended to add additional features? Discuss what one would have to change in order to add some new functionality. Consider each of the following cases:
+	• New bullet types.
+￼	• New types of collectible items (besides power). • More interesting bomb effects.
+	• Neutral enemies that fire at both players.
+
+Known problems:
+	 Discuss any known problems with your implementation, including missing functionality, bugs, and incorrect documentation in the code.
+	 
+Comments: 
+	Express your opinions about the assignment. This section of the overview document will not be graded, but it can earn good karma. You might address such questions as:
+	• How much time did you spend on the assignment? How was it divided between designing, coding, and testing?
+	• What advice should we have given you before you started?
+	• What was surprising about the assignment?
+	• What was hard about the assignment?
+	• What did you like or dislike about the assignment?
+	• What would you change about the assignment?
