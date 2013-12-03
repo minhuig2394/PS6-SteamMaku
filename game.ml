@@ -75,7 +75,55 @@ let handle_time game =
   failwith "Charisma BREAK"
 
 let handle_action game col act =
-  failwith "A myon sort of day"
+   match col, act with
+    |Blue, Move _  -> game
+    |Red, Move _ -> game
+    |Blue, Shoot b -> game
+    |Red, Shoot b -> game
+    |Blue, Focus x ->
+       let updated = {
+        game with 
+        redfocus = x
+        } in updated
+    |Red, Focus x -> 
+       let updated = {
+        game with 
+        redfocus = x
+        } in updated
+  |Blue, Bomb -> 
+    let updated = {
+    game with 
+    redbullets = []; 
+    bluebullets = [];
+    blueinvinc = cBomb_Duration;
+    bluebombs = game.bluebombs - 1
+    } in updated
+  |Red, Bomb -> 
+    let updated = {
+    game with 
+    redbullets = []; 
+    bluebullets = [];
+    redinvinc = cBomb_Duration;
+    redbombs = game.redbombs - 1
+    } in updated
+(*action -> Move of (direction * direction) list
+            Shoot of (bullet_type * position * acceleration
+            bullet_type can be Spread | Bubble | Power | Trail*)
+
+(*For Move: 
+
+  For Shoot: Deplete Charge
+  Change bullet list
+
+  For Focus: Change the focus of the player
+
+  For Bomb: clear the screen of bullets, 
+  make the user invincible
+  Remove any bullets that the invincible user grazes during duration of bomb
+  No charge accumulated
+  Subtract number of bombs available to the player
+*)
+
 
 let get_data game =
   let redp : player_char = 
