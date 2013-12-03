@@ -2,7 +2,7 @@ open Definitions
 open Constants
 open Game
 open Util 
-open Player 
+
 
 (*determines if two circles intersect*)
 let collide (point:position) (r1:int) (center:position) (r2:int) = 
@@ -96,7 +96,7 @@ let create_trail plpos pcolor target acc=
           b_vel = 
             (let next_vel = (init_vel (cTRAIL_SPEED_STEP*n) target plpos) in 
             rotate next_vel angle); 
-          b_accel = (if fst(acc) <= cACCEL_LIMIT && fst(acc) <= cACCEL_LIMIT then 
+          b_accel = (if fst(acc) <= cACCEL_LIMIT && fst(acc)<=cACCEL_LIMIT then 
           acc else (0.,0.));
           b_radius = cTRAIL_RADIUS;
           b_color = pcolor} in 

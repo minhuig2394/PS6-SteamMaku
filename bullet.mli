@@ -1,5 +1,7 @@
-(*create_bullet takes in a bullet_type and returns a list of bullets with that bullet_type*)
-val create_bullet: bullet_type -> int -> position -> color -> acceleration -> bullet list
+(*create_bullet takes in a bullet_type, a target position, 
+* a player color, and acceleration 
+* and returns a list of bullets with that bullet_type*)
+val create_bullet: bullet_type -> position -> color -> acceleration -> bullet list
 
 (*update_blives does the following:
 * 1. determines if bullets are out of bounds.  
