@@ -9,11 +9,6 @@ let add_vector a b =
 let sub_vector a b = 
 	((fst a) -. (fst b)),((snd a) -. (snd b))
 
-(*determines if a point is inside a circle*)
-let point_inside (point:position) (center:position) (radius:int)= 
-  let dist = sub_vector point center in 
-  let rad = float_of_int radius in 
-  ((fst dist)*.(fst dist) +. (snd dist)*.(snd dist)) < rad*.rad
 (*determines if two circles intersect*)
 let collide (point:position) (r1:int) (center:position) (r2:int) = 
   let radius = float_of_int (r1 + r2) in 
@@ -28,6 +23,7 @@ let set_pos (b:bullet) =
 (*determines if a bullet is out of bounds*)
 let out (b:bullet) = 
   b.b_pos <= (float_of_int cBOARD_WIDTH,float_of_int cBOARD_HEIGHT) 
+
 (*determines if a bullet's radius and a player's radius intersect*)
 let hit (b:bullet) (p:player_char) = 
   collide b.b_pos b.b_radius p.p_pos p.p_radius
