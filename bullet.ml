@@ -9,24 +9,52 @@ let add_vector a b =
 let sub_vector a b = 
 	((fst a) -. (fst b)),((snd a) -. (snd b))
 
+(*determines if a point is inside a circle*)
+let point_inside (point:position) (center:position) (radius:int)= 
+  let dist = sub_vector point center in 
+  let rad = float_of_int radius in 
+  ((fst dist)*.(fst dist) +. (snd dist)*.(snd dist)) < rad*.rad
+(*determines if two circles intersect*)
+let collide (point:position) (r1:int) (center:position) (r2:int) = 
+  let radius = float_of_int (r1 + r2) in 
+  let diff = sub_vector point center in 
+  ((fst diff)*.(fst diff) +. (snd diff)*.(snd diff)) < radius*.radius 
+
 let set_pos (b:bullet) = 
 	{b with 
 		b_pos = add_vector b.b_pos b.b_vel;
 		b_vel = add_vector b.b_vel b.b_accel}
 
-let update_blives (blst: bullet list) (ppos:position) =
-  let rec update ulst lost graze rlst= 
-  |h::t -> let bpos = (int_of_float h.b_pos) in 
-  if bpos <= cBOARD_SIZE then 
-    set_pos h; update_blives t lost graze (h::rlst) 
-  else update_blives t rlst
-  |[] -> lost,graze,rlst
+(*determines if a bullet is out of bounds*)
+let out (b:bullet) = 
+  b.b_pos <= (float_of_int cBOARD_WIDTH,float_of_int cBOARD_HEIGHT )
+(*determines if a bullet's radius and a player's radius intersect*)
+let hit (b:bullet) (p:player_char) = 
+  collide b.b_pos b.b_radius p.p_pos p.p_radius
+(*if a player is not hit but is within graze radius of a bullet returns true*)
+let grazed (b:bullet) (p:player_char)= 
+  (not (hit b p)) && (collide b.b_pos cGRAZE_RADIUS p.p_pos p.p_radius) 
 
-let bullet_vel a = 
-	match a.b_type with 
-	|Spread -> cSPREAD_SPEED 
-	|Bubble -> cBUBBLE_SPEED 
-	|Trail -> cTRAIL_SPEED_STEP 
+let update_blives (blst: bullet list) (p:player_char) =
+  let rec update ulst lost graze rlst= 
+  match ulst with 
+  |h::t -> 
+    if out h then 
+      if hit h p then 
+        update t true graze rlst 
+      else 
+        if grazed h p then 
+          update t lost (graze + 1) rlst
+        else update t lost graze rlst
+    else 
+      if hit h p then 
+        update t true graze ((set_pos h)::rlst)
+      else 
+        if grazed h p then 
+          update t lost (graze + 1) ((set_pos h)::rlst)
+        else  update t lost graze ((set_pos h)::rlst)
+  |[] -> lost,graze,rlst
+in update blst false 0 []
 
 let init_vel speed target pos= 
 	let sp = float_of_int speed in 
@@ -117,3 +145,4 @@ let create_bullet b target id plpos pcolor acc=
 	|Spread -> create_spread id target plpos pcolor acc 
 	|Bubble -> create_spread id target plpos pcolor acc  
 	|Trail ->  create_trail  id plpos pcolor target acc
+
