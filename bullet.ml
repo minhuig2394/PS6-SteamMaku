@@ -27,7 +27,7 @@ let set_pos (b:bullet) =
 
 (*determines if a bullet is out of bounds*)
 let out (b:bullet) = 
-  b.b_pos <= (float_of_int cBOARD_WIDTH,float_of_int cBOARD_HEIGHT )
+  b.b_pos <= (float_of_int cBOARD_WIDTH,float_of_int cBOARD_HEIGHT) 
 (*determines if a bullet's radius and a player's radius intersect*)
 let hit (b:bullet) (p:player_char) = 
   collide b.b_pos b.b_radius p.p_pos p.p_radius
