@@ -145,12 +145,12 @@ let update_ufos bul updates=
     rpower_pts= 0;
     bpower_pts= 0;
     } in 
-  let rec update upd bulletlst= 
+  let rec update upd bulletlst pwr= 
     match upd.bullet_lst with 
     |h::t -> 
       let pow,u = (update_ufos h upd) in
       let powers = 
-      List.fold_left (fun acc elem -> create_power updated_ufo rp bp) [] pow in
+      List.fold_left (fun acc elem -> create_power elem rp.p_pos bp.p_pos) [] pow in
        let updates = {upd with ulst = u} in
        begin 
       match h.b_color with 
@@ -163,7 +163,7 @@ let update_ufos bul updates=
             if grazed h bp then 
               (add_update (Graze);
               add_update (DeleteBullet h.b_id);
-              update {updates with bgraze_pts = updates.bgraze_pts + 1} t)
+              update {updates with bgraze_pts = updates.bgraze_pts + 1} t pwr@powers)
             else (add_update (DeleteBullet h.b_id);update updates t pwr@powers) 
         (*bullet in*)
         else 
@@ -181,7 +181,7 @@ let update_ufos bul updates=
         (*bullet out*)
         if out h then 
           if hit h rp then 
-            update {updates with rlost = true} t
+            update {updates with rlost = true} t pwr@powers
           else
             if grazed h rp then 
               (add_update (Graze);
@@ -202,7 +202,7 @@ let update_ufos bul updates=
               update {
               updates with bullet_lst = (set_pos h)::updates.bullet_lst} t pwr@powers
         end
-    |[] -> upd,pwr
+    |[] -> (upd,pwr)
   in update init_update blst pwr@powers
 
 let update_all (red:player_char) (blue:player_char) (blst: bullet list) (ufolst: ufo list) (pwrlst: power list)= 

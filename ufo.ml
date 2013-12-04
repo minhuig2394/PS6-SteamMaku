@@ -23,11 +23,14 @@ let grazed_ufo (b:bullet) (u:ufo) =
 
 let set_pos_ufo (b:ufo) = 
   let new_pos = add_v b.u_pos b.u_vel in 
-    (add_update MoveUFO (b.u_id,new_pos));
+    (add_update (MoveUFO (b.u_id,new_pos)));
     {b with 
     u_pos = new_pos}
 
-let random_position =
+let roll x= let r = Random.int 2 in 
+  if r = 0 then x else ~-.x
+
+let random_position x=
   let onef = 1./.4. *. (float_of_int cBOARD_WIDTH) in  
   let threef = 3./.4. *. (float_of_int cBOARD_WIDTH) in 
   let bound = threef -. onef in 
@@ -46,18 +49,19 @@ let random_pradius radius center =
     ((roll randx)+.(fst center)), ((roll randy)+.(snd center))
 
 let random_vel upos= 
-  let r = random_position in 
+  let r = random_position 1 in 
   init_vel cUFO_SPEED r upos
 
 let create_ufo = 
-let rdir = random_position in 
+  let rdir = random_position 0 in 
+  let u = 
   {u_id = next_available_id ();
     u_pos = rdir;
     u_vel = random_vel rdir;
     u_radius = cUFO_RADIUS;
     u_red_hits = 0;
    u_blue_hits = 0
-  }
+  } in add_update (AddUFO (u.u_id, u.u_pos));u
 
 let create_power  (u:ufo) (rpos:position) (bpos:position)= 
   let h = (u.u_red_hits + u.u_blue_hits) in 
@@ -83,12 +87,9 @@ let update_ufo ufolst=
 	let rec update ulst rlst = 
 	match ulst with 
 	|h::t ->
-		let rdir = random_direction in 
-		if u.u_red_hits + u.u_blue_hits < cUFO_HITS then 
 			let u = {h with 
-        u_vel = init_vel cUFO_SPEED random_direction random_position}
-			in update t (u::rlst) 
-		else 
-			create_power cUFO_POWER_NUM cUFO_SCATTER_RADIUS
+        u_vel = init_vel cUFO_SPEED (random_position 32) (random_position 2)}
+			in update t (u::rlst)
 	|[] -> rlst
+in update ufolst []
 
