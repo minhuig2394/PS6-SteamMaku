@@ -18,7 +18,7 @@ type game =
      bluefoc : bool;
      redbullets : bullet list;
      bluebullets : bullet list;
-     timer : int;
+     timer : float;
      (*version 2 only*)
      redbombs : int;
      bluebombs : int;
@@ -35,6 +35,8 @@ type game =
 
 
 let init_game () : game =
+  let width = float_of_int cBOARD_WIDTH in
+  let height = float_of_int cBOARD_HEIGHT in
   let init : game = 
     {redid = 1;
      blueid = 2;
@@ -42,15 +44,13 @@ let init_game () : game =
      redscore = 0;
      redcharge = 0;
      redpos = 
-     ((float_of_int c_BOARD_WIDTH) /. 8., 
-      (float_of_int cBOARD_HEIGHT) /. 2.);
+     (width /. 8., height /. 2.);
      redfoc = false;
      bluelife = cINITIAL_LIVES;
      bluescore = 0;
      bluecharge = 0;
      bluepos =
-     (((float_of_int c_BOARD_WIDTH) /. 8.) *. 7., 
-      (float_of_int cBOARD_HEIGHT) /. 2.)
+     ((width /. 8.) *. 7., height /. 2.);
      bluefoc = false;
      redbullets = [];
      bluebullets = [];
@@ -63,15 +63,15 @@ let init_game () : game =
      (*version 4 only*)
      redpower = 0;
      bluepower = 0;
-     ufotimer : int;
+     ufotimer = 0;
      numpower = 0;
      ufos = [];
      powers = [];
    } in
   add_update (AddPlayer (init.redid, Red, init.redpos));
   add_update (AddPlayer (init.blueid, Blue, init.bluepos));
-  add_update (SetBomb (Red, init.redbombs));
-  add_update (SetBomb (Blue, init.bluebombs));
+  add_update (SetBombs (Red, init.redbombs));
+  add_update (SetBombs (Blue, init.bluebombs));
   add_update (SetLives (Red, init.redlife));
   add_update (SetLives (Blue, init.bluelife));
   add_update (SetScore (Red, init.redscore));
@@ -97,19 +97,19 @@ let handle_action game col act =
   |Blue, Focus x ->
       let updated = 
 	{game with 
-	 redfocus = x
+	 bluefoc = x
        } in updated
   |Red, Focus x -> 
       let updated = 
 	{game with 
-	 redfocus = x
+	 redfoc = x
        } in updated
   |Blue, Bomb -> 
       let updated = 
 	{game with 
 	 redbullets = []; 
 	 bluebullets = [];
-	 blueinvinc = cBomb_Duration;
+	 blueinvinc = cBOMB_DURATION;
 	 bluebombs = game.bluebombs - 1
        } in 
   add_update (UseBomb (Blue));
@@ -119,7 +119,7 @@ let handle_action game col act =
 	{game with 
 	 redbullets = []; 
 	 bluebullets = [];
-	 redinvinc = cBomb_Duration;
+	 redinvinc = cBOMB_DURATION;
 	 redbombs = game.redbombs - 1
        } in 
   add_update (UseBomb (Red));
@@ -141,17 +141,17 @@ let handle_action game col act =
 
 let get_data game =
   let redp : player_char = 
-    (p_id = game.redid; 
+    {p_id = game.redid; 
      p_pos = game.redpos; 
      p_focused = game.redfoc;
      p_radius = cHITBOX_RADIUS;
-     p_color = RED;} in
+     p_color = Red} in
   let bluep : player_char = 
     {p_id = game.blueid; 
      p_pos = game.bluepos; 
      p_focused = game.bluefoc;
      p_radius = cHITBOX_RADIUS;
-     p_color = BLUE;} in
+     p_color = Blue} in
   let red : team_data = 
   (game.redlife, 
    game.redbombs, 
@@ -167,6 +167,6 @@ let get_data game =
    game.bluecharge, 
    bluep) in
   let totalbullets : bullet list = 
-    List.append redbullets bluebullets in
+    List.append game.redbullets game.bluebullets in
   let data : game_data = 
-    red * blue * game.ufos * totalbullets * game.powers
+    (red, blue, game.ufos, totalbullets, game.powers) in data
