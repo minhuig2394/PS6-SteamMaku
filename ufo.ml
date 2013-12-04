@@ -1,11 +1,7 @@
-type ufo = {
-  u_id : int;
-  u_pos : position;
-  u_vel : velocity;
-  u_radius : int;
-  u_red_hits : int;
-  u_blue_hits : int
-}
+open Definitions
+open Constants
+open Util 
+open Bullet 
 
 let init_vel speed target pos= 
   let sp = float_of_int speed in 
@@ -13,6 +9,23 @@ let init_vel speed target pos=
   let y = ((snd target) -. (snd pos)) in 
   let cosine,sine = unit_v (x,y) in 
   (sp*.cosine,sp*.sine)
+
+let collide (point:position) (r1:int) (center:position) (r2:int) = 
+  let radius = float_of_int (r1 + r2) in 
+  let diff = subt_v point center in 
+  ((fst diff)*.(fst diff) +. (snd diff)*.(snd diff)) < radius*.radius 
+
+let hit_ufo (b:bullet) (u:ufo) = 
+  collide b.b_pos b.b_radius u.u_pos u.u_radius
+
+let grazed_ufo (b:bullet) (u:ufo) = 
+  (not (hit_ufo b u)) && (collide b.b_pos cGRAZE_RADIUS u.u_pos u.u_radius) 
+
+let set_pos_ufo (b:ufo) = 
+  let new_pos = add_v b.u_pos b.u_vel in 
+    (add_update MoveUFO (b.u_id,new_pos));
+    {b with 
+    u_pos = new_pos}
 
 let random_position =
   let onef = 1./.4. *. (float_of_int cBOARD_WIDTH) in  
@@ -31,7 +44,6 @@ let random_pradius radius center =
   let randx = Random.float (float_of_int radius) in 
   let randy = Random.float (float_of_int radius) in 
     ((roll randx)+.(fst center)), ((roll randy)+.(snd center))
-
 
 let random_vel upos= 
   let r = random_position in 
@@ -62,7 +74,7 @@ let create_power  (u:ufo) (rpos:position) (bpos:position)=
   		b_accel = (0.,0.);
   		b_radius = cPOWER_RADIUS;
   		b_color = if r < reds then Red else Blue;
-		} in 
+		} in add_update (AddBullet (p.b_id, p.b_color,p.b_type,p.b_pos));
 		create (n - 1) (r +. 1.) (p::plst)
   else plst
   in create cUFO_POWER_NUM 0.0 []
@@ -73,7 +85,8 @@ let update_ufo ufolst=
 	|h::t ->
 		let rdir = random_direction in 
 		if u.u_red_hits + u.u_blue_hits < cUFO_HITS then 
-			let u = {h with u_vel = init_vel cUFO_SPEED random_direction random_position}
+			let u = {h with 
+        u_vel = init_vel cUFO_SPEED random_direction random_position}
 			in update t (u::rlst) 
 		else 
 			create_power cUFO_POWER_NUM cUFO_SCATTER_RADIUS
