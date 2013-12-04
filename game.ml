@@ -83,10 +83,45 @@ let init_game () : game =
   init
 
 let handle_time game =
-  (*check if red player has no more life
-    check if blue player has no more life
-    check if red or blue player has more points if no more time*)
-  failwith "not implemented"
+  (*1. Update positions and velocities of all bullets + UFOs
+    2. Update positions of all players (depending on normal or focused)
+    3. Compile a list of all bullet/player collisions
+    and all bullet/UFO collisions simultaneously
+    3a. process a hit on each UFO for each collision 
+    - If UFO was destroyed, remove it and add powers as discussed
+    3b. if either player was hit (while not invincible), 
+    deduct a life from their total, refill their bomb stock, 
+    clear the screen of bullets 
+    (If both players were hit, do the same for both). 
+    Do not deduct more than 1 life in one timestep
+    5. check for player/power collision + process power collection
+    6. check if game is over
+
+    Modify timer and subtract cUPDATE_TIME
+    type result: (game, result)
+    result :
+    Winner of color
+    Tie
+    Unfinished
+   *)
+  let updated = game in
+  if updated.redlife = 0 then 
+  GameOver (Winner (Blue));
+  (updated, Winner (Blue))
+  else if updated.bluelife = 0 then 
+  GameOver (Winner (Red));
+  (updated, Winner (Red))
+  else if updated.timer = 0 then
+  if updated.redscore > updated.bluescore then 
+  GameOver (Winner (Red));
+  (updated, Winner (Red))
+  else if updated.bluescore > updated.redscore then 
+  GameOver (Winner (Blue));
+  (updated, Winner (Blue))
+  else 
+  GameOver (Tie)
+  (updated, Tie)
+  else (updated, Unfinished)
 
 let handle_action game col act =
   match col, act with
@@ -113,6 +148,7 @@ let handle_action game col act =
 	 bluebombs = game.bluebombs - 1
        } in 
   add_update (UseBomb (Blue));
+  add_update (SetBombs (Blue, updated.bluebombs));
   updated
   |Red, Bomb -> 
       let updated = 
@@ -123,6 +159,7 @@ let handle_action game col act =
 	 redbombs = game.redbombs - 1
        } in 
   add_update (UseBomb (Red));
+  add_update (SetBombs (Red, updated.redbombs));
   updated
 (*action -> Move of (direction * direction) list
             Shoot of (bullet_type * position * acceleration
