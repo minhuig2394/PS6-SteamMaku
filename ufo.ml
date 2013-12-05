@@ -44,15 +44,17 @@ let random_position x=
       (randx, randy)
 
 let random_pradius radius center =
-  let randx = Random.float (float_of_int radius) in 
-  let randy = Random.float (float_of_int radius) in 
-    ((roll randx)+.(fst center)), ((roll randy)+.(snd center))
+  let randr = Random.float (float_of_int radius) in 
+  let randp = add_v (0.,randr) center in 
+  let randa = Random.int 360 in 
+  rotate_deg randp (float randa)
+  
 
 let random_vel upos= 
   let r = random_position 1 in 
   init_vel cUFO_SPEED r upos
 
-let create_ufo = 
+let create_ufo = fun x ->
   let rdir = random_position 0 in 
   let u = 
   {u_id = next_available_id ();
