@@ -19,8 +19,7 @@ type game =
      bluecharge : int;
      bluepos : position;
      bluefoc : bool;
-     redbullets : bullet list;
-     bluebullets : bullet list;
+     bullets : bullet list;
      timer : float;
      (*version 2 only*)
      redbombs : int;
@@ -57,8 +56,7 @@ let init_game () : game =
      bluepos =
      ((width /. 8.) *. 7., height /. 2.);
      bluefoc = false;
-     redbullets = [];
-     bluebullets = [];
+     bullets = [];
      timer = cTIME_LIMIT;
      (*version 2 only*)
      redbombs = cINITIAL_BOMBS;
@@ -104,42 +102,51 @@ let handle_time game =
   let (redhead, redtail) = 
     match game.redmove with 
     |h::t -> (h, t)
-    |[] -> ([], []) in
+    |[] -> ((Neutral, Neutral), []) in
   let (bluehead, bluetail) =
     match game.bluemove with
     |h::t -> (h, t)
-    |[] -> ([], []) in
+    |[] -> ((Neutral, Neutral), []) in
   let updated =
     {game with
      redmove = redtail;
      bluemove = bluetail;
-     redpos = if redhead = [] then game.redpos 
+     redpos = if redhead = (Neutral, Neutral) then game.redpos 
      else
-       move game.redpos redhead redfoc;
-     bluepos = if bluehead = [] then game.bluepos
+       move_player game.redpos redhead game.redfoc;
+     bluepos = if bluehead = (Neutral, Neutral) then game.bluepos
      else 
-       move game.bluepos bluehead bluefoc;
-     timer = game.timer - cUPDATE_TIME} in
+       move_player game.bluepos bluehead game.bluefoc;
+     timer = game.timer -. cUPDATE_TIME} in
   add_update (MovePlayer (updated.redid, updated.redpos));
   add_update (MovePlayer (updated.blueid, updated.bluepos));
-  if updated.redlife = 0 
+  let r = (g_result updated.redlife updated.bluelife updated.redscore
+      updated.bluescore updated.timer) in
+  match r with
+  |Unfinished -> 
+      (updated, Unfinished)
+  |_ -> 
+      add_update (GameOver r);
+      (updated, r)
+
+  (*if updated.redlife = 0 
   then 
-    add_update (GameOver (Winner (Blue)));
-  (updated, Winner (Blue))
-else if updated.bluelife = 0 then 
-  add_update (GameOver (Winner (Red)));
-(updated, Winner (Red))
-else if updated.timer = 0 then
-  if updated.redscore > updated.bluescore then 
-    add_update (GameOver (Winner (Red)));
-(updated, Winner (Red))
-else if updated.bluescore > updated.redscore then 
-  add_update (GameOver (Winner (Blue)));
-(updated, Winner (Blue))
-else 
-add_update (GameOver (Tie));
-(updated, Tie)
-else (updated, Unfinished)
+    (*add_update (GameOver (Winner (Blue)));*)
+    (updated, Winner (Blue))
+  else if updated.bluelife = 0 then 
+  (*add_update (GameOver (Winner (Red)));*)
+    (updated, Winner (Red))
+  else if updated.timer = 0. then
+    if updated.redscore > updated.bluescore then 
+    (*add_update (GameOver (Winner (Red)));*)
+      (updated, Winner (Red))
+    else if updated.bluescore > updated.redscore then 
+      (*add_update (GameOver (Winner (Blue)));*)
+      (updated, Winner (Blue))
+    else 
+      (*add_update (GameOver (Tie));*)
+      (updated, Tie)
+  else (updated, Unfinished)*)
 
 let handle_action game col act =
   match col, act with
@@ -166,8 +173,7 @@ let handle_action game col act =
   |Blue, Bomb -> 
       let updated = 
 	{game with 
-	 redbullets = []; 
-	 bluebullets = [];
+	 bullets = [];
 	 blueinvinc = cBOMB_DURATION;
 	 bluebombs = game.bluebombs - 1
        } in 
@@ -177,8 +183,7 @@ let handle_action game col act =
   |Red, Bomb -> 
       let updated = 
 	{game with 
-	 redbullets = []; 
-	 bluebullets = [];
+	 bullets = [];
 	 redinvinc = cBOMB_DURATION;
 	 redbombs = game.redbombs - 1
        } in 
@@ -227,7 +232,5 @@ let get_data game =
    game.bluepower, 
    game.bluecharge, 
    bluep) in
-  let totalbullets : bullet list = 
-    List.append game.redbullets game.bluebullets in
   let data : game_data = 
-    (red, blue, game.ufos, totalbullets, game.powers) in data
+    (red, blue, game.ufos, game.bullets, game.powers) in data
