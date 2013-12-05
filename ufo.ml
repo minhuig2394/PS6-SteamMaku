@@ -1,7 +1,6 @@
 open Definitions
 open Constants
 open Util 
-open Bullet 
 
 let init_vel speed target pos= 
   let sp = float_of_int speed in 
@@ -49,7 +48,6 @@ let random_pradius radius center =
   let randx,randy = rotate_deg (0.,randr) (float randa) in 
   add_v center (randx,randy)
   
-
 let random_vel upos= 
   let r = random_position 1 in 
   init_vel cUFO_SPEED r upos
