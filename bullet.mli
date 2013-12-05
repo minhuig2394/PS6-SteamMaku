@@ -1,7 +1,7 @@
 (*create_bullet takes in a bullet_type, a target position, 
 * a player color, and acceleration 
 * and returns a list of bullets with that bullet_type*)
-val create_bullet: Definitions.bullet_type -> Definitions.position -> Definitions.color -> Definitions.acceleration -> Definitions.bullet list
+val create_bullet: Definitions.bullet_type -> Definitions.position -> Definitions.position -> Definitions.color -> Definitions.acceleration -> Definitions.bullet list
 
 (*update_all does the following:
 * 1. determines if bullets are out of bounds.  
