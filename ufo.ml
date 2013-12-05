@@ -1,6 +1,7 @@
 open Definitions
 open Constants
 open Util 
+open Netgraphics 
 
 let init_vel speed target pos= 
   let sp = float_of_int speed in 
