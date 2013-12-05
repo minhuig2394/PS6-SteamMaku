@@ -44,10 +44,10 @@ let random_position x=
       (randx, randy)
 
 let random_pradius radius center =
-  let randr = Random.float (float_of_int radius) in 
-  let randp = add_v (0.,randr) center in 
+  let randr = Random.float (float radius) in 
   let randa = Random.int 360 in 
-  rotate_deg randp (float randa)
+  let randx,randy = rotate_deg (0.,randr) (float randa) in 
+  add_v center (randx,randy)
   
 
 let random_vel upos= 
