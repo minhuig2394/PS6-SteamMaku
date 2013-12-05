@@ -32,7 +32,10 @@ let set_pos (b:bullet) =
 
 (*determines if a bullet is out of bounds*)
 let out (b:bullet) = 
-  not (in_bounds b.b_pos)
+  (((fst b.b_pos)-. (float b.b_radius)) >= 0. && 
+  ((snd b.b_pos)-. (float b.b_radius)) >= 0. && 
+  ((fst b.b_pos)+. (float b.b_radius)) <= float cBOARD_WIDTH && 
+  ((snd b.b_pos)+. (float b.b_radius)) <= float cBOARD_HEIGHT)
 (*determines if a bullet's radius and a player's radius intersect*)
 let hit (b:bullet) (p:player_char) = 
   collide b.b_pos b.b_radius p.p_pos p.p_radius
@@ -133,7 +136,36 @@ let update_ufos bul updates=
           (remove_ufo updated_ufo acc)
       else acc) ([],[]) updates.ulst 
 
-  let update_bullets (rp:player_char) (bp:player_char) (blst: bullet list) (ufolst: ufo list) (pwr: power list)=
+  let determine (h:bullet) (player:player_char) 
+    (invincible:bool) (update:'a) (updates:total_update) (t:bullet list) (pwr:power list)= 
+        if (out h) then 
+          (add_update (DeleteBullet h.b_id);update updates t pwr)
+        else 
+          if invincible = true then 
+            if (hit h player) || (grazed h player) then 
+              (add_update (DeleteBullet h.b_id);update updates t pwr)
+            else update {
+              updates with bullet_lst = (set_pos h)::updates.bullet_lst} t pwr
+          else 
+            if hit h player then 
+              if player.p_color = Blue then 
+                (update {updates with blost = true; 
+              bullet_lst = (set_pos h)::updates.bullet_lst} t pwr)
+              else (update {updates with rlost = true; 
+              bullet_lst = (set_pos h)::updates.bullet_lst} t pwr) 
+            else 
+              if grazed h player then 
+              (add_update (Graze);
+                if player.p_color = Blue then 
+                (update {updates with bgraze_pts = updates.bgraze_pts + 1;
+                bullet_lst = (set_pos h)::updates.bullet_lst } t pwr)
+                else (update {updates with bgraze_pts = updates.rgraze_pts + 1;
+                bullet_lst = (set_pos h)::updates.bullet_lst } t pwr)
+              )
+              else update {
+              updates with bullet_lst = (set_pos h)::updates.bullet_lst} t pwr
+
+let update_bullets (rp:player_char) (bp:player_char) (rinvincible :bool) (binvincible:bool) (blst: bullet list) (ufolst: ufo list) (pwr: power list)=
   let init_update = 
   {rlost =false; 
    blost =false; 
@@ -149,64 +181,19 @@ let update_ufos bul updates=
     match upd.bullet_lst with 
     |h::t -> 
       let pow,u = (update_ufos h upd) in
-      let powers = 
-      List.fold_left (fun acc elem -> create_power elem rp.p_pos bp.p_pos) [] pow in
-       let updates = {upd with ulst = u} in
-       begin 
-      match h.b_color with 
-      |Red -> 
-        (*bullet out*)
-        if out h then 
-          if hit h bp then 
-            update {updates with blost = true} t pwr@powers
-          else
-            if grazed h bp then 
-              (add_update (Graze);
-              add_update (DeleteBullet h.b_id);
-              update {updates with bgraze_pts = updates.bgraze_pts + 1} t pwr@powers)
-            else (add_update (DeleteBullet h.b_id);update updates t pwr@powers) 
-        (*bullet in*)
-        else 
-          if hit h bp then 
-            update {updates with blost = true; 
-            bullet_lst = (set_pos h)::updates.bullet_lst} t pwr@powers
-          else 
-            if grazed h bp then 
-              (add_update (Graze);
-              update {updates with bgraze_pts = updates.bgraze_pts + 1;
-              bullet_lst = (set_pos h)::updates.bullet_lst } t pwr@powers)
-            else update {
-              updates with bullet_lst = (set_pos h)::updates.bullet_lst} t pwr@powers
-      |Blue -> 
-        (*bullet out*)
-        if out h then 
-          if hit h rp then 
-            update {updates with rlost = true} t pwr@powers
-          else
-            if grazed h rp then 
-              (add_update (Graze);
-              add_update (DeleteBullet h.b_id);
-              update {updates with rgraze_pts = updates.rgraze_pts + 1} t pwr@powers)
-            else update updates t pwr@powers
-        (*bullet in*)
-        else 
-          if hit h rp then 
-            update {updates with rlost = true; 
-              bullet_lst = (set_pos h)::updates.bullet_lst} t pwr@powers
-          else 
-            if grazed h rp then 
-              (add_update (Graze);
-              update {updates with rgraze_pts = updates.rgraze_pts + 1;
-              bullet_lst = (set_pos h)::updates.bullet_lst } t pwr@powers)
-            else 
-              update {
-              updates with bullet_lst = (set_pos h)::updates.bullet_lst} t pwr@powers
-        end
+      let pwr =       
+      (List.fold_left (fun acc elem -> (create_power elem rp.p_pos bp.p_pos)@acc) pwr pow) in
+      let updates = {upd with ulst = u} in
+      begin 
+      match h.b_color with
+      |Red -> determine h bp binvincible update updates t pwr
+      |Blue -> determine h rp binvincible update updates t pwr
+      end
     |[] -> (upd,pwr)
-  in update init_update blst pwr@powers
+  in update init_update blst pwr
 
-let update_all (red:player_char) (blue:player_char) (blst: bullet list) (ufolst: ufo list) (pwrlst: power list)= 
-  let updated_most,pwers = (update_bullets red blue blst ufolst) in 
+let update_all (red:player_char) (blue:player_char) (rinvincible :bool) (binvincible:bool) (blst: bullet list) (ufolst: ufo list) (pwrlst: power list)= 
+  let updated_most,pwers = (update_bullets red blue rinvincible binvincible blst ufolst pwrlst) in 
   let rec update_powers (updates:total_update) pwrs plst= 
     match pwrs with 
     |h::t -> 
