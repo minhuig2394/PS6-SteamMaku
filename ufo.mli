@@ -7,6 +7,6 @@ val create_power : Definitions.ufo -> Definitions.position -> Definitions.positi
 val create_ufo : 'a -> Definitions.ufo 
 
 (*update_ufo updates a ufo : to be called at every cUFO MOVE INTERVAL timesteps*)
-val update_ufo : Definitions.ufo list 
+val update_ufo : Definitions.ufo list -> Definitions.ufo list
 
 
