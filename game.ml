@@ -3,6 +3,8 @@ open Constants
 open Util
 open Netgraphics
 open Player
+open Ufo
+open Bullet
 
 type game = 
     {redid : int;
@@ -129,24 +131,6 @@ let handle_time game =
       add_update (GameOver r);
       (updated, r)
 
-  (*if updated.redlife = 0 
-  then 
-    (*add_update (GameOver (Winner (Blue)));*)
-    (updated, Winner (Blue))
-  else if updated.bluelife = 0 then 
-  (*add_update (GameOver (Winner (Red)));*)
-    (updated, Winner (Red))
-  else if updated.timer = 0. then
-    if updated.redscore > updated.bluescore then 
-    (*add_update (GameOver (Winner (Red)));*)
-      (updated, Winner (Red))
-    else if updated.bluescore > updated.redscore then 
-      (*add_update (GameOver (Winner (Blue)));*)
-      (updated, Winner (Blue))
-    else 
-      (*add_update (GameOver (Tie));*)
-      (updated, Tie)
-  else (updated, Unfinished)*)
 
 let handle_action game col act =
   match col, act with
@@ -158,8 +142,22 @@ let handle_action game col act =
       let updated =
 	{game with
 	 redmove = m} in updated
-  |Blue, Shoot (b, p, a) -> game
-  |Red, Shoot (b, p, a)-> game
+  |Blue, Shoot (b, p, a) -> 
+      let (nbullets, c) = shoot b p game.bluepos  a game.redcharge Blue in
+      let updated = 
+	{game with
+	 bullets = List.append game.bullets nbullets;
+	 bluecharge = game.bluecharge - c} in 
+      add_update (SetCharge (Blue, updated.bluecharge));
+      updated
+  |Red, Shoot (b, p, a)-> 
+      let (nbullets, c) = shoot b p game.redpos a game.redcharge Red in
+      let updated = 
+	{game with
+	 bullets = List.append game.bullets nbullets;
+	 redcharge = game.redcharge - c} in 
+      add_update (SetCharge (Red, updated.redcharge));
+      updated
   |Blue, Focus x ->
       let updated = 
 	{game with 
@@ -190,16 +188,8 @@ let handle_action game col act =
   add_update (UseBomb (Red));
   add_update (SetBombs (Red, updated.redbombs));
   updated
-(*action -> Move of (direction * direction) list
-            Shoot of (bullet_type * position * acceleration
-            bullet_type can be Spread | Bubble | Power | Trail*)
 
-(*For Move: Need to use MovePlayer (id, pos) graphic update
-
-  For Shoot: Deplete Charge
-  Change bullet list
-
-  For Bomb:    
+(*For Bomb:    
   Remove any bullets that the invincible user grazes during duration of bomb
   No charge accumulated
 *)
