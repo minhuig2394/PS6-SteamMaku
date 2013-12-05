@@ -17,8 +17,8 @@ type total_update =
     }
 
   type update_info = 
-    {red:player_char; 
-    blue:player_char;
+    {red: player_char; 
+    blue: player_char;
     rinvincible :bool; 
     binvincible:bool; 
     blst: bullet list; 
@@ -127,15 +127,15 @@ let update_ufos bul updates=
   let remove_ufo updated_ufo acc= 
     if (updated_ufo.u_red_hits + updated_ufo.u_blue_hits) >= cUFO_HITS then
     ((add_update (DeleteUFO updated_ufo.u_id));
-      updated_ufo::(fst acc),(snd acc))
+      (updated_ufo::(fst acc)),(snd acc))
     else (fst acc),(updated_ufo::(snd acc)) in
     List.fold_left (fun acc elem -> 
       if (hit_ufo bul elem) then 
       let updated_ufo = 
         (if bul.b_color = Red then 
         {elem with u_red_hits = (elem.u_red_hits + 1)} 
-      else {elem with u_blue_hits = (elem.u_blue_hits + 1)})
-    in 
+        else {elem with u_blue_hits = (elem.u_blue_hits + 1)})
+      in 
         (remove_ufo updated_ufo acc)
       else acc) ([],[]) updates.ulst
 
@@ -208,18 +208,18 @@ let update_all (updlst: update_info)=
   let rec update_powers pwrs plst= 
     match pwrs with 
     |h::t -> 
-      if hit h red then 
+      if hit h updlst.red then 
         (add_update (DeleteBullet h.b_id);
         updates.rpower_pts <- updates.rpower_pts + 1;
         update_powers t plst)
       else
-        if hit h blue then 
+        if hit h updlst.blue then 
           (add_update (DeleteBullet h.b_id);
           updates.bpower_pts <- updates.bpower_pts + 1;
         update_powers t plst)
         else update_powers t (h::plst)
     |[] -> updates.powerlst <- plst;updates
-  in update_powers (pwrlst@pwers) []
+  in update_powers ((updlst.pwrlst)@pwers) []
 
 let delete_all blst = 
   List.iter (fun elem -> add_update (DeleteBullet elem.b_id)) blst
