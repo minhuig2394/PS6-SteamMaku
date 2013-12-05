@@ -15,7 +15,16 @@ type total_update =
     mutable rpower_pts: int;
     mutable bpower_pts: int;
     }
-    
+
+  type update_info = 
+    {red:player_char; 
+    blue:player_char;
+    rinvincible :bool; 
+    binvincible:bool; 
+    blst: bullet list; 
+    ufolst: ufo list; 
+    pwrlst: power list}
+
 (*determines if two circles intersect*)
 let collide (center1:position) (r1:int) (center2:position) (r2:int) = 
   let radius = float_of_int (r1 + r2) in 
@@ -164,7 +173,8 @@ let update_ufos bul updates=
               else 
               (updates.bullet_lst <- (set_pos h)::updates.bullet_lst; update t pwr)
 
-let update_bullets (rp:player_char) (bp:player_char) (rinvincible :bool) (binvincible:bool) (blst: bullet list) (ufolst: ufo list) (pwr: power list)=
+let update_bullets (rp:player_char) (bp:player_char) (rinvincible :bool) 
+  (binvincible:bool) (blst: bullet list) (ufolst: ufo list) (pwr: power list)=
   let updates = 
   {rlost =false; 
    blost =false; 
@@ -191,8 +201,10 @@ let update_bullets (rp:player_char) (bp:player_char) (rinvincible :bool) (binvin
     |[] -> (updates,pwr)
   in update blst pwr
 
-let update_all (red:player_char) (blue:player_char) (rinvincible :bool) (binvincible:bool) (blst: bullet list) (ufolst: ufo list) (pwrlst: power list)= 
-  let updates,pwers = (update_bullets red blue rinvincible binvincible blst ufolst pwrlst) in 
+let update_all (updlst: update_info)= 
+  let updates,pwers = 
+    (update_bullets updlst.red updlst.blue updlst.rinvincible 
+      updlst.binvincible updlst.blst updlst.ufolst updlst.pwrlst) in 
   let rec update_powers pwrs plst= 
     match pwrs with 
     |h::t -> 

@@ -1,4 +1,5 @@
 type total_update 
+type update_info
 (*create_bullet takes in a bullet_type, a target position, 
 * a player color, and acceleration 
 * and returns a list of bullets with that bullet_type*)
@@ -15,9 +16,7 @@ val create_bullet: Definitions.bullet_type -> Definitions.position ->
 *   Returns the number of grazes the player has experienced
 * This is all ultimately represented as a record of type total_updates
 *)
-val update_all: Definitions.player_char -> Definitions.player_char -> 
-	bool -> bool -> Definitions.bullet list -> Definitions.ufo list -> 
-		Definitions.power list -> total_update
+val update_all: update_info -> total_update
 
 (*delete_all removes all bullets from the gui, given the bullet list*)
 val delete_all: Definitions.bullet list -> unit 
