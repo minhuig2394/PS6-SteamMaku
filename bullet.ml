@@ -31,11 +31,11 @@ let set_pos (b:bullet) =
 		b_vel = add_v b.b_vel b.b_accel}
 
 (*determines if a bullet is out of bounds*)
-let out (b:bullet) = 
+let out (b:bullet) = not(
   (((fst b.b_pos)-. (float b.b_radius)) >= 0. && 
   ((snd b.b_pos)-. (float b.b_radius)) >= 0. && 
   ((fst b.b_pos)+. (float b.b_radius)) <= float cBOARD_WIDTH && 
-  ((snd b.b_pos)+. (float b.b_radius)) <= float cBOARD_HEIGHT)
+  ((snd b.b_pos)+. (float b.b_radius)) <= float cBOARD_HEIGHT))
 (*determines if a bullet's radius and a player's radius intersect*)
 let hit (b:bullet) (p:player_char) = 
   collide b.b_pos b.b_radius p.p_pos p.p_radius
