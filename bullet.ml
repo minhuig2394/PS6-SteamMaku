@@ -1,6 +1,5 @@
 open Definitions
 open Constants
-open Game
 open Util 
 open Ufo
 open Netgraphics
@@ -107,7 +106,8 @@ let create_trail plpos pcolor target acc=
     else lst 
   in trail cTRAIL_NUM []
 
-let create_bullet b target plpos pcolor acc= 
+let create_bullet (b:bullet_type) (target:position) 
+    (plpos:position) (pcolor:color) (acc:acceleration)= 
 	match b with 
 	|Spread -> create_spread  target plpos pcolor acc 
 	|Bubble -> create_spread  target plpos pcolor acc  
