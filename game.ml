@@ -2,6 +2,7 @@ open Definitions
 open Constants
 open Util
 open Netgraphics
+open Player
 
 type game = 
     {redid : int;
@@ -10,6 +11,8 @@ type game =
      redscore : int;
      redcharge : int;
      redpos : position;
+     redmove : (direction * direction) list;
+     bluemove : (direction * direction) list;
      redfoc : bool;
      bluelife : int;
      bluescore : int;
@@ -45,6 +48,8 @@ let init_game () : game =
      redcharge = 0;
      redpos = 
      (width /. 8., height /. 2.);
+     redmove = [];
+     bluemove = [];
      redfoc = false;
      bluelife = cINITIAL_LIVES;
      bluescore = 0;
@@ -95,38 +100,57 @@ let handle_time game =
     (If both players were hit, do the same for both). 
     Do not deduct more than 1 life in one timestep
     5. check for player/power collision + process power collection
-    6. check if game is over
-
-    Modify timer and subtract cUPDATE_TIME
-    type result: (game, result)
-    result :
-    Winner of color
-    Tie
-    Unfinished
    *)
-  let updated = game in
-  if updated.redlife = 0 then 
-  GameOver (Winner (Blue));
+  let (redhead, redtail) = 
+    match game.redmove with 
+    |h::t -> (h, t)
+    |[] -> ([], []) in
+  let (bluehead, bluetail) =
+    match game.bluemove with
+    |h::t -> (h, t)
+    |[] -> ([], []) in
+  let updated =
+    {game with
+     redmove = redtail;
+     bluemove = bluetail;
+     redpos = if redhead = [] then game.redpos 
+     else
+       move game.redpos redhead redfoc;
+     bluepos = if bluehead = [] then game.bluepos
+     else 
+       move game.bluepos bluehead bluefoc;
+     timer = game.timer - cUPDATE_TIME} in
+  add_update (MovePlayer (updated.redid, updated.redpos));
+  add_update (MovePlayer (updated.blueid, updated.bluepos));
+  if updated.redlife = 0 
+  then 
+    add_update (GameOver (Winner (Blue)));
   (updated, Winner (Blue))
-  else if updated.bluelife = 0 then 
-  GameOver (Winner (Red));
-  (updated, Winner (Red))
-  else if updated.timer = 0 then
+else if updated.bluelife = 0 then 
+  add_update (GameOver (Winner (Red)));
+(updated, Winner (Red))
+else if updated.timer = 0 then
   if updated.redscore > updated.bluescore then 
-  GameOver (Winner (Red));
-  (updated, Winner (Red))
-  else if updated.bluescore > updated.redscore then 
-  GameOver (Winner (Blue));
-  (updated, Winner (Blue))
-  else 
-  GameOver (Tie)
-  (updated, Tie)
-  else (updated, Unfinished)
+    add_update (GameOver (Winner (Red)));
+(updated, Winner (Red))
+else if updated.bluescore > updated.redscore then 
+  add_update (GameOver (Winner (Blue)));
+(updated, Winner (Blue))
+else 
+add_update (GameOver (Tie));
+(updated, Tie)
+else (updated, Unfinished)
 
 let handle_action game col act =
   match col, act with
-  |Blue, Move _ -> game
-  |Red, Move _ -> game
+  |Blue, Move m -> 
+      let updated = 
+	{game with
+	 bluemove = m} in updated
+  |Red, Move m -> 
+      let updated =
+	{game with
+	 redmove = m} in updated
   |Blue, Shoot (b, p, a) -> game
   |Red, Shoot (b, p, a)-> game
   |Blue, Focus x ->
