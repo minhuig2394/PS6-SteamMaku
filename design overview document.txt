@@ -73,6 +73,8 @@ Extensibility:
 
 Known problems:
 	 Discuss any known problems with your implementation, including missing functionality, bugs, and incorrect documentation in the code.
+	Our implementation of Bullet is a bit long, and there are probably ways to write the functions in a clearer, more efficient manner.  It has, however, been improved many times.  
+
 	 
 Comments: 
 	Express your opinions about the assignment. This section of the overview document will not be graded, but it can earn good karma. You might address such questions as:
@@ -90,4 +92,4 @@ Comments:
 	It was hard to keep track of all so many elements when testing and trying to come up with an "expected" result to match to the result the functions gave.  
 	
 	• What did you like or dislike about the assignment?
-	
+	We really like the prologue and the gui.  We also found the coding process to be fun at times. 	
