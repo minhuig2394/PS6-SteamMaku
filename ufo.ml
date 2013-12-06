@@ -10,11 +10,12 @@ let init_vel speed target pos=
   let cosine,sine = unit_v (x,y) in 
   (sp*.cosine,sp*.sine)
 
-let collide (point:position) (r1:int) (center:position) (r2:int) = 
+(*determines if two circles intersect*)
+let collide (center1:position) (r1:int) (center2:position) (r2:int) = 
   let radius = float_of_int (r1 + r2) in 
-  let diff = subt_v point center in 
+  let diff = subt_v center1 center2 in 
   ((fst diff)*.(fst diff) +. (snd diff)*.(snd diff)) < radius*.radius 
-
+  
 let hit_ufo (b:bullet) (u:ufo) = 
   collide b.b_pos b.b_radius u.u_pos u.u_radius
 

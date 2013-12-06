@@ -72,8 +72,6 @@ let bullet6 = {b_type = Trail;
 				b_radius = cTRAIL_RADIUS;
 				b_color = Blue}
 
-let bullets = [bullet1;bullet2;bullet3;bullet4;bullet5;bullet6]
-
 let rplayer = {p_id = 100;
 				p_pos = (0.,0.);
 				p_focused = true;
@@ -85,21 +83,86 @@ let bplayer = {p_id = 101;
 				p_focused = true;
 				p_radius = cHITBOX_RADIUS;
 				p_color = Blue}
+
 let ufo1 = {u_id = 50;
-			u_pos = (float cBOARD_WIDTH, float cBOARD_HEIGHT);
+			u_pos = (float cBOARD_WIDTH +. 1., float cBOARD_HEIGHT);
 			u_vel = (1.,1.);
 			u_radius = cUFO_RADIUS;
-			u_red_hits = 0;
+			u_red_hits = 7;
+			u_blue_hits = 1;
+			 }
+
+let ufo2 = {u_id = 51;
+			u_pos = (0.,0.);
+			u_vel = (1.,1.);
+			u_radius = cUFO_RADIUS;
+			u_red_hits = 7;
+			u_blue_hits = 3;
+			 }
+
+let ufo3 = {u_id = 52;
+			u_pos = (0.,0.);
+			u_vel = (25.,25.);
+			u_radius = cUFO_RADIUS;
+			u_red_hits = 7;
 			u_blue_hits = 0;
 			 }
 
-let ufo2 = {u_id = 50;
+let ufo4 = {u_id = 53;
 			u_pos = (float cBOARD_WIDTH, float cBOARD_HEIGHT);
-			u_vel = (1.,1.);
+			u_vel = (100.,100.);
 			u_radius = cUFO_RADIUS;
-			u_red_hits = 0;
-			u_blue_hits = 0;
+			u_red_hits = 7;
+			u_blue_hits = 1;
 			 }
+
+let update1 = {rlost =false; 
+   				blost =false; 
+    			rgraze_pts = 2; 
+    			bgraze_pts= 0; 
+    			bullet_lst = bullets; 
+    			ulst = ulist2; 
+    			powerlst= [];
+    			rpower_pts= 7;
+    			bpower_pts= 3;
+    			}
+let update2 = {rlost =false; 
+   				blost =false; 
+    			rgraze_pts = 0; 
+    			bgraze_pts= 0; 
+    			bullet_lst = bullets3; 
+    			ulst = [ufo2]; 
+    			powerlst= [];
+    			rpower_pts= 10;
+    			bpower_pts= 0;
+    			}
+let update3 = {rlost =false; 
+   				blost =false; 
+    			rgraze_pts = 0; 
+    			bgraze_pts= 0; 
+    			bullet_lst = bullets2; 
+    			ulst = ulist1; 
+    			powerlst= [];
+    			rpower_pts= 0;
+    			bpower_pts= 0;
+    			}
+let update4 = {rlost =false; 
+   				blost =false; 
+    			rgraze_pts = 0; 
+    			bgraze_pts= 0; 
+    			bullet_lst = bullets3; 
+    			ulst = ulist; 
+    			powerlst= [];
+    			rpower_pts= 0;
+    			bpower_pts= 0;
+    			}
+let ulist = []
+let ulist1 = [ufo1]
+let ulist2 = [ufo1;ufo2;ufo3;ufo4]
+let bullets = [bullet1;bullet2;bullet3;bullet4;bullet5;bullet6]
+let bullets2 = []
+let bullets3 = [bullet1]
+let bullets4 = [bullet2;bullet3;bullet4]
 
 let collide_test = (collide (rplayer.p_pos) (rplayer.p_radius) (bullet1.b_pos) (bullet1.b_radius)) = true 
 let collide_test2 = (collide (rplayer.p_pos) (rplayer.p_radius) (bullet4.b_pos) (bullet4.b_radius)) = false
@@ -122,10 +185,133 @@ let create_spread_test =
 	(within_bounds (get_ang (angle bplayer rplayer) splst) 
 			(360/cSPREAD_NUM)) = true)
 
-let update_ufos_test = let updates = {
+let update_ufos_test = 
+	let hit,pl,ul = update_ufos bullet2 update1 in 
+	(List.length pl = 1) && 
+	(List.length ul = 3) && 
+	hit = true
+
+let update_ufos_test1 =
+	let hit,pl,ul = update_ufos bullet1 update2 in 
+	(List.length pl = 1) && 
+	(List.length ul = 0) && 
+	hit = true
 
 
-update_ufos bullets updates 
+let update_bullets_test = 
+	let new_update,pwr = update_bullets rplayer bplayer false
+  	false [] ulist1 [] in 
+  	new_update = {rlost =true; 
+   blost =false; 
+    rgraze_pts = 0; 
+    bgraze_pts= 0; 
+    bullet_lst = bullets3; 
+    ulst = ulist1; 
+    powerlst= pwr;
+    rpower_pts= 0;
+    bpower_pts= 0;
+    }
+
+let update_ufos_test1 =
+	let hitu,pl,ul = update_ufos bullet1 update2 in 
+	(List.length pl = 1) && 
+	(List.length ul = 0) && 
+	hitu = true
+
+let update_bullets_test1 = 
+	let new_update,pwr = update_bullets rplayer bplayer false
+  	false [bullet1] [ufo2] [] in 
+  	new_update = {rlost =true; 
+   blost =false; 
+    rgraze_pts = 0; 
+    bgraze_pts= 0; 
+    bullet_lst = []; 
+    ulst = []; 
+    powerlst= [];
+    rpower_pts= 0;
+    bpower_pts= 0;
+    }
+
+
+let update_bullets_test2 = 
+	let new_update,pwr = update_bullets rplayer bplayer false
+  	false [bullet1] [ufo3] [] in 
+  	new_update = {rlost =true; 
+   blost =false; 
+    rgraze_pts = 0; 
+    bgraze_pts= 0; 
+    bullet_lst = []; 
+    ulst = [{ufo3 with u_blue_hits = 1}]; 
+    powerlst= [];
+    rpower_pts= 0;
+    bpower_pts= 0;
+    }
+
+let update_bullets_test3 = 
+	let new_update,pwr = update_bullets rplayer bplayer true
+  	false [bullet1] [ufo3] [] in 
+  	new_update = {rlost =false; 
+   blost =false; 
+    rgraze_pts = 0; 
+    bgraze_pts= 0; 
+    bullet_lst = []; 
+    ulst = [{ufo3 with u_blue_hits = 1}]; 
+    powerlst= [];
+    rpower_pts= 0;
+    bpower_pts= 0;
+    }
+
+let updlst= 
+    {red= rplayer; 
+    blue= bplayer;
+    rinvincible =false; 
+    binvincible=false; 
+    blst= [bullet1]; 
+    ufolst= [ufo3]; 
+    pwrlst= []}
+
+let update_all_test = 
+	let u = update_all ublst in 
+	u.rlost = true &&
+   u.blost =false &&
+    u.rgraze_pts = 0 && 
+    u.bgraze_pts= 0 && 
+    u.bullet_lst = [] &&
+    u.ulst = [{ufo3 with u_blue_hits = 1}] && 
+    u.powerlst= [] &&
+    u.rpower_pts= 0 &&
+    u.bpower_pts= 0 
+   
+let updlst1= 
+    {red= rplayer; 
+    blue= bplayer;
+    rinvincible =false; 
+    binvincible=false; 
+    blst= [bullet1]; 
+    ufolst= [ufo2]; 
+    pwrlst= []}
+
+let update_all_test1 = 
+	let u = update_all updlst1 in 
+	u.rlost = true &&
+   u.blost =false &&
+    u.rgraze_pts = 0 && 
+    u.bgraze_pts= 0 && 
+    u.bullet_lst = [] &&
+    u.ulst = [] && 
+    not(u.powerlst= []) 
+
+	{rlost =true; 
+   blost =false; 
+    rgraze_pts = 0; 
+    bgraze_pts= 0; 
+    bullet_lst = []; 
+    ulst = [{ufo3 with u_blue_hits = 1}]; 
+    powerlst= [];
+    rpower_pts= 0;
+    bpower_pts= 0;
+    }
+
 
 
 
