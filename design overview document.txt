@@ -4,7 +4,7 @@ netids: dw443, mg797
 
 Summary : 
 
-	We implemented the SteamMaku with full features.  We wrote helper functions for Game in separate modules called Bullet, Ufo, and Player to prevent Game from being too long and difficult to test.  It also allowed us to build the game bottom-up.  
+	We implemented the SteamMaku with full features.  We wrote helper functions for Game in separate modules called Bullet, Ufo, and Player to prevent Game from being too long and difficult to test.  It also allowed us to build the game bottom-up. We did incremental testing in our code; we used a combination of unit testing and testing in the form of running the game to test our program.  
 
 Instructions:
 	 In order to run our game, the Makefile section must be edited to look like this:
@@ -133,11 +133,11 @@ Extensibility:
 	It would probably not involve too much change, since bombs are generally handled in Player and only require some minor helper functions in other modules, like the delete_all function in Bullet, which clears the gui of all bullets in the case a player is hit.  
 
 	• Neutral enemies that fire at both players.
-	This would require major changes to all code because the entire game is built on that there are two players.  We would have to make drastic changes to the update functions that look for bullet collisions.  
+	This would require major changes to all code because the entire game is built on that there are two players and two colors of bullets.  We would have to make drastic changes to the update functions that look for bullet collisions.  
 
 Known problems:
 	 Discuss any known problems with your implementation, including missing functionality, bugs, and incorrect documentation in the code.
-	Our implementation of Bullet is a bit long, and there are probably ways to write the functions in a clearer, more efficient manner.  It has, however, been improved many times.  
+	Our implementation of Bullet is a bit long, and there are probably ways to write the functions in a clearer, more efficient manner.  It has, however, been improved many times.  We are also experiencing a problem where bullets aren’t being deleted from the gui from time to time.  It is strange because it is usually a problem with assigning ids, but we are using the given function next_available_id() in Util to assign ids to bullets.  From what we see, we do delete bullets when appropriate.  
 
 	 
 Comments: 

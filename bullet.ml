@@ -82,6 +82,7 @@ let create_spread (target:position) (plpos:position)
 			in screate (n - 1) new_ang new_bullst 
 		else lst 
 	in screate cSPREAD_NUM 0.0 [] 
+
 (*helper function creates 1 bubble and returns as a list with a single bubble*)
 let create_bubble  (target:position) (plpos:position) 
   (pcolor:color) (acc:acceleration): bullet list= 
@@ -168,11 +169,12 @@ let determine (hitufo: bool)(h:bullet) (player:player_char)
         else (updates.rlost <- true;update t pwr))
     else 
         if grazed h player then 
+          (add_update (Graze);
           if invincible = true then 
-            (add_update (DeleteBullet h.b_id); add_update (Graze);
+            (add_update (DeleteBullet h.b_id); 
             if player.p_color = Blue then 
             (updates.bgraze_pts <- updates.bgraze_pts + 1;update t pwr)
-            else (updates.rgraze_pts <- updates.rgraze_pts + 1;update t pwr))
+            else (updates.rgraze_pts <- updates.rgraze_pts + 1;update t pwr)))
           else 
             (updates.bullet_lst <- (set_pos h)::updates.bullet_lst;
             if player.p_color = Blue then 
