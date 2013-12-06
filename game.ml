@@ -92,14 +92,6 @@ let init_game () : game =
   init
 
 let handle_time game =
-  (*1. Update positions and velocities of all bullets + UFOs
-    3. Compile a list of all bullet/player collisions
-    and all bullet/UFO collisions simultaneously
-    3a. process a hit on each UFO for each collision 
-    - If UFO was destroyed, remove it and add powers as discussed
-    5. check for player/power collision + process power collection
-   *)
-
   let (redhead, redtail) = 
     match game.redmove with 
     |h::t -> (h, t)
@@ -196,7 +188,6 @@ let handle_time game =
   add_update (SetPower (Blue, updated.bluepower));
   add_update (SetCharge (Red, updated.redcharge));
   add_update (SetCharge (Blue, updated.bluecharge));
-  add_update (Countdown (int_of_float updated.timer));
   let r = (g_result updated.redlife updated.bluelife updated.redscore
       updated.bluescore updated.timer) in
   match r with
