@@ -25,32 +25,51 @@ Design and implementation:
 Discuss how you split the program into modules, what purpose these modules serve, and any invariants maintained. Also discuss their interfaces.
 
 Aside from the game.ml file, we created separate modules for players, bullets, and ufos 
-- resulting in the files player.ml, player.mli, bullet.ml, bullet.mli, ufo.ml, ufo.mli
+- resulting in the files player.ml, player.mli, bullet.ml, bullet.mli, ufo.ml, ufo.mli.  
 
 The modules were created so that game.ml would not be overloaded with code, thus making coding and debugging more difficult. The modules allow us to separate code more efficiently and locate bugs in the code faster. The modules also allow us to individually code without having to rely on one another's code. 
 
-We decided to put UFOs and Powers in one module because you only create Powers when UFOs are destroyed.
+We decided to put UFOs and Powers in one module because you only create power ups when UFOs are destroyed. Bullet is dedicated for creating bullets and for updating, so it made sense that the other types of objects are created and handled elsewhere. 
 
-• Architecture. Discuss how your modules interact with each other, how they com- municate with each other, and how they depend on each other.
+Bullet’s interface only provides the function names for creating bullets, updating and deleting.  This is because they are the only ones needed by other modules and all other functions in Bullet are basically helper functions for these main functions.  The types of the records used in Bullet are exposed in the mli file because they are needed in the communication between Game and Bullet.  
 
-The Player module calls upon the Bullet module in order to calculate whether or not the player has enough charge to shoot the bullets.
+• Architecture. Discuss how your modules interact with each other, how they communicate with each other, and how they depend on each other.
+
+The Player module calls upon the Bullet module in order to calculate whether or not the player has enough charge to shoot the bullets. Bullet calls on Ufo to update positions of UFOs and power ups and to check for collisions. 
 
 • Code design. Discuss any notable algorithms employed by your program, and which data structures you used. Mention any tradeoffs you made between code simplicity and efficiency.
 
-We decided upon using a record instead of a tuple, as it made our code cleaner and easier to read. It was also easier to code as we could easily edit parts of the record, instead of having to match the tuple in order to change information of the tuple. We chose not to make the record mutable as that would've posed concurrency problems.
+We decided upon using records instead of tuples, as it made our code cleaner and easier to read. It was also easier to code as we could easily edit parts of a record, instead of having to match a tuple in order to change information of the tuple. We chose not to make most of our records mutable as that could've posed concurrency problems. The only mutable record we used is in Bullet, to simplify code. But it is used mostly internally, and is only used outside Bullet to pass updated information.  It is not created anywhere else.  
 
-• Implementation. Discuss the implementation strategy you used (top-down, bottom- up). Also include any challenges you ran into while coding, any code reuse or revi- sion you employed, and what the rough division of work was between your group members.
+• Implementation. Discuss the implementation strategy you used (top-down, bottom- up). Also include any challenges you ran into while coding, any code reuse or revision you employed, and what the rough division of work was between your group members.
 
 You need to give the course staff enough information so that we can understand your program without looking at the source code. In doing so, you should convince us that you gave careful consideration to the construction of your program.
 
 Testing: 
 	Describe your test plan, and discuss any issues that you ran into while carrying out this test plan. Are you confident that your testing gives good enough coverage of all possible scenarios? Remember that testing is not something that should only be done at the end, but rather, it should be done incrementally, as you write parts of the program. You need to convince the staff that you exercised due diligence in validating your program.
 
+We created unit testing files for each of our modules.  We tested the helper functions first.  Once they worked, we were able to test the functions that used them.  For example to test our collisions function we would test something like:
+let hit_test = (hit bullet1 rplayer) = true
+let hit_test2 = (hit bullet3 bplayer) = true
+let hit_test3 = (hit bullet2 rplayer) = false
+where bullet1, bullet2, and bullet3 are sample bullets of different properties and rplayer and bplayer are the red player and blue player respectively.  
+We tried to go for corner cases, to make sure our code would work for them.  Our testing should provide fairly good coverage of most scenarios.
+
 Extensibility:
 	 How easily could your code be extended to add additional features? Discuss what one would have to change in order to add some new functionality. Consider each of the following cases:
 	• New bullet types.
-￼	• New types of collectible items (besides power). • More interesting bomb effects.
+	We would have to change our create function to match for the new bullet types and write helper functions that help create those bullets in our Bullet module as well as some minor edits in Game to handle the new bullet costs.  But otherwise, we could easily extend our code to add new bullets.  
+	• New types of collectible items (besides power).
+	This would not be as simple.  We would need a create function for these items and, depending on when and how they are created, either make separate functions or add to the existing update_ufo function in Bullet, where all the update functions are. However, as long as they are not involved in bullet collisions, it is not too hard to check for them when updating.   
+	• More interesting bomb effects.
+
+
+
+
+
+
 	• Neutral enemies that fire at both players.
+	This would require major changes to all code because the entire game is built on that there are two players.  We would have to make drastic changes to the update functions that look for bullet collisions.  
 
 Known problems:
 	 Discuss any known problems with your implementation, including missing functionality, bugs, and incorrect documentation in the code.
@@ -59,13 +78,16 @@ Comments:
 	Express your opinions about the assignment. This section of the overview document will not be graded, but it can earn good karma. You might address such questions as:
 	
 	• How much time did you spend on the assignment? How was it divided between designing, coding, and testing?
+	We spent at least 30 hours on this assignment, distributed among several days.  Designing took a day or two.  Coding took a lot of time.  Testing also took a lot of time.  We spent perhaps a sixth of the time on design, two thirds of the rest on coding and the rest of that on testing. 
 	
 	• What advice should we have given you before you started?
+	I feel the writeup,piazza and design doc meeting provided us with enough information to complete this assignment without too much problem. 
 	
 	• What was surprising about the assignment?
+	The gui is amazing.  
 	
 	• What was hard about the assignment?
+	It was hard to keep track of all so many elements when testing and trying to come up with an "expected" result to match to the result the functions gave.  
 	
 	• What did you like or dislike about the assignment?
 	
-	• What would you change about the assignment?
