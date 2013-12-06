@@ -209,16 +209,23 @@ let update_all (updlst: update_info): total_update=
   let rec update_powers pwrs plst= 
     match pwrs with 
     |h::t -> 
-      if hit h updlst.red then 
+      if hit h updlst.red && not (hit h updlst.blue) then 
         (add_update (DeleteBullet h.b_id);
         updates.rpower_pts <- updates.rpower_pts + 1;
         update_powers t plst)
       else
-        if hit h updlst.blue then 
+        if hit h updlst.blue && not (hit h updlst.red) then 
           (add_update (DeleteBullet h.b_id);
           updates.bpower_pts <- updates.bpower_pts + 1;
         update_powers t plst)
-        else update_powers t ((set_pos h)::plst)
+        else 
+        if (hit h updlst.blue) && (hit h updlst.red) then 
+          (add_update (DeleteBullet h.b_id);
+        updates.rpower_pts <- updates.rpower_pts + 1;
+        updates.bpower_pts <- updates.bpower_pts + 1;
+        update_powers t plst)
+        else
+        update_powers t ((set_pos h)::plst)
     |[] -> updates.powerlst <- plst;updates
   in update_powers ((updlst.pwrlst)@pwers) []
 (*delete_all clears the gui of bullets*)
