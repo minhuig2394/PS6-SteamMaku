@@ -42,7 +42,11 @@ Player’s interface provides functions
 
 • Architecture. Discuss how your modules interact with each other, how they communicate with each other, and how they depend on each other.
 
-The Player module calls upon the Bullet module in order to calculate whether or not the player has enough charge to shoot the bullets. Bullet calls on Ufo to update positions of UFOs and power ups and to check for collisions. 
+The Player module calls upon the Bullet module in order to calculate whether or not the player has enough charge to shoot the bullets. 
+It uses the function create_bullet in Bullet. 
+Bullet calls on Ufo to update positions of UFOs and power ups and to check for collisions. 
+It uses the functions hit_ufo to check for collisions between bullets and UFOs and also sets the positions of UFOs with set_pos_ufo.  
+Game calls on all of these to put together all the information needed in the game, such as the list of UFOs, the list of power ups, the list of bullets,the players, etc…
 
 • Code design. Discuss any notable algorithms employed by your program, and which data structures you used. Mention any tradeoffs you made between code simplicity and efficiency.
 
@@ -78,7 +82,7 @@ where bullet1, bullet2, and bullet3 are sample bullets of different properties a
 
 We tried to go for corner cases, to make sure our code would work for them.  Our testing should provide fairly good coverage of most testable scenarios.
 
-We also tested by running the game to see if it showed what we believed to be expected behavior.  This makes it easier to test for overall functionality than unit testing.  
+We also tested by running the game to see if it showed what we believed to be expected behavior.  This makes it easier to test for overall functionality than unit testing.  It also tested parts of functions we could not test with unit tests, like adding updates to the gui.  
 
 Extensibility:
 	 How easily could your code be extended to add additional features? Discuss what one would have to change in order to add some new functionality. Consider each of the following cases:
@@ -87,7 +91,7 @@ Extensibility:
 	• New types of collectible items (besides power).
 	This would not be as simple.  We would need a create function for these items and, depending on when and how they are created, either make separate functions or add to the existing update_ufo function in Bullet, where all the update functions are. However, as long as they are not involved in bullet collisions, it is not too hard to check for them when updating.   
 	• More interesting bomb effects.
-	It would probably not involve too much change, since bombs are generally handled in Player and only require some minor helper functions in other modules, like the delete_all function in Bullet, which clears the gui of all bullets.  
+	It would probably not involve too much change, since bombs are generally handled in Player and only require some minor helper functions in other modules, like the delete_all function in Bullet, which clears the gui of all bullets in the case a player is hit.  
 
 	• Neutral enemies that fire at both players.
 	This would require major changes to all code because the entire game is built on that there are two players.  We would have to make drastic changes to the update functions that look for bullet collisions.  
