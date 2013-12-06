@@ -172,6 +172,7 @@ let handle_time game =
      
      bullets = if (urecord.rlost = true && game.redmercinv = false) || 
      	(urecord.blost = true && game.bluemercinv = false) then [] else urecord.bullet_lst;
+     	
      timer = game.timer -. cUPDATE_TIME;
      
      (*Version 4*)
