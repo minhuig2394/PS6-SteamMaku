@@ -28,6 +28,8 @@ type game =
      bluebombs : int;
      redinvinc : int;
      blueinvinc : int;
+     redbombinv : bool;
+     bluebombinv : bool;
      (*version 4 only*)
      redpower : int;
      bluepower : int;
@@ -64,6 +66,8 @@ let init_game () : game =
      bluebombs = cINITIAL_BOMBS;
      redinvinc = 0;
      blueinvinc = 0;
+     redbombinv = false;
+     bluebombinv = false;
      (*version 4 only*)
      redpower = 0;
      bluepower = 0;
@@ -129,8 +133,8 @@ let handle_time game =
   let ui : update_info = 
     {red = redp;
      blue = bluep;
-     rinvincible = if game.redinvinc <> 0 then true else false;
-     binvincible = if game.blueinvinc <> 0 then true else false;
+     rinvincible = game.redbombinv;
+     binvincible = game.bluebombinv;
      blst = game.bullets;
      ufolst = game.ufos;
      pwrlst = game.powers;
@@ -145,9 +149,11 @@ let handle_time game =
      bluepower = newpower game.bluepower urecord.blost urecord.bpower_pts;
 
      redcharge = 
-     charge game.redcharge game.redpower urecord.rlost urecord.rpower_pts;
+     charge game.redcharge game.redpower urecord.rlost 
+       urecord.rpower_pts game.redbombinv;
      bluecharge = 
-     charge game.bluecharge game.bluepower urecord.blost urecord.bpower_pts;
+     charge game.bluecharge game.bluepower urecord.blost 
+       urecord.bpower_pts game.bluebombinv;
 
      redpos = redp.p_pos;
      bluepos = bluep.p_pos;
@@ -162,6 +168,9 @@ let handle_time game =
      
      redinvinc = newinvinc urecord.rlost game.redinvinc;
      blueinvinc = newinvinc urecord.blost game.blueinvinc;
+     
+     redbombinv = newbombinv game.redbombinv urecord.rlost game.redinvinc;
+     bluebombinv = newbombinv game.bluebombinv urecord.blost game.blueinvinc;
      
      bullets = urecord.bullet_lst;
      timer = game.timer -. cUPDATE_TIME;
@@ -234,6 +243,7 @@ let handle_action game col act =
 	  {game with 
 	   bullets = [];
 	   blueinvinc = cBOMB_DURATION;
+	   bluebombinv = true;
 	   bluebombs = game.bluebombs - 1
 	 } in 
 	delete_all game.bullets;
@@ -247,6 +257,7 @@ let handle_action game col act =
 	  {game with 
 	   bullets = [];
 	   redinvinc = cBOMB_DURATION;
+	   redbombinv = true;
 	   redbombs = game.redbombs - 1
 	 } in 
 	delete_all game.bullets;
