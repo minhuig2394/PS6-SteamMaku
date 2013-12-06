@@ -4,7 +4,7 @@ netids: dw443, mg797
 
 Summary : 
 
-	Summarize the rest of your overview. Anything you mention here should be described in more detail in the rest of your document.
+	We implemented the SteamMaku with full features.  We wrote helper functions for Game in separate modules called Bullet, Ufo, and Player to prevent Game from being too long and difficult to test.  It also allowed us to build the game bottom-up.  
 
 Instructions:
 	 In order to run our game, the Makefile section must be edited to look like this:
@@ -33,6 +33,13 @@ We decided to put UFOs and Powers in one module because you only create power up
 
 Bullet’s interface only provides the function names for creating bullets, updating and deleting.  This is because they are the only ones needed by other modules and all other functions in Bullet are basically helper functions for these main functions.  The types of the records used in Bullet are exposed in the mli file because they are needed in the communication between Game and Bullet.  
 
+Ufo’s interface provides functions required in Game and Bullet.  It includes the functions for creating UFOs and changing the velocity of UFOs used in Game and the collision detection function and position setting of UFOs required for the update functions in Bullet.  
+
+Player’s interface provides functions 
+
+
+
+
 • Architecture. Discuss how your modules interact with each other, how they communicate with each other, and how they depend on each other.
 
 The Player module calls upon the Bullet module in order to calculate whether or not the player has enough charge to shoot the bullets. Bullet calls on Ufo to update positions of UFOs and power ups and to check for collisions. 
@@ -52,12 +59,26 @@ We divided the work between ourselves by having one member implement Player and 
 Testing: 
 	Describe your test plan, and discuss any issues that you ran into while carrying out this test plan. Are you confident that your testing gives good enough coverage of all possible scenarios? Remember that testing is not something that should only be done at the end, but rather, it should be done incrementally, as you write parts of the program. You need to convince the staff that you exercised due diligence in validating your program.
 
-We created unit testing files for each of our modules.  We tested the helper functions first.  Once they worked, we were able to test the functions that used them.  For example to test our collisions function we would test something like:
+We created unit testing files for each of our modules.  We tested the helper functions first.  Once they worked, we were able to test the functions that used them.  For example to test our collisions function we would test something like the following:
+We had a function to check for intersecting radii: 
+let collide (center1:position) (r1:int) (center2:position) (r2:int):bool = 
+  let radius = float_of_int (r1 + r2) in 
+  let diff = subt_v center1 center2 in 
+  ((fst diff)*.(fst diff) +. (snd diff)*.(snd diff)) < radius*.radius 
+We tested it with several cases to see if it worked as expected.  
+Then we tested our collision function for players and bullets.  
+For the collision function: 
+let hit (b:bullet) (p:player_char) :bool= 
+  collide b.b_pos b.b_radius p.p_pos p.p_radius
+We would make tests like :
 let hit_test = (hit bullet1 rplayer) = true
 let hit_test2 = (hit bullet3 bplayer) = true
 let hit_test3 = (hit bullet2 rplayer) = false
 where bullet1, bullet2, and bullet3 are sample bullets of different properties and rplayer and bplayer are the red player and blue player respectively.  
-We tried to go for corner cases, to make sure our code would work for them.  Our testing should provide fairly good coverage of most scenarios.
+
+We tried to go for corner cases, to make sure our code would work for them.  Our testing should provide fairly good coverage of most testable scenarios.
+
+We also tested by running the game to see if it showed what we believed to be expected behavior.  This makes it easier to test for overall functionality than unit testing.  
 
 Extensibility:
 	 How easily could your code be extended to add additional features? Discuss what one would have to change in order to add some new functionality. Consider each of the following cases:
