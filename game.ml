@@ -33,7 +33,8 @@ type game =
      (*version 4 only*)
      redpower : int;
      bluepower : int;
-     ufotimer : int;
+     ufospawntimer : int;
+     ufomovetimer : int;
      ufos : ufo list;
      powers : power list;
    }
@@ -71,8 +72,9 @@ let init_game () : game =
      (*version 4 only*)
      redpower = 0;
      bluepower = 0;
-     ufotimer = 0;
-     ufos = [];
+     ufospawntimer = cUFO_SPAWN_INTERVAL;
+     ufomovetimer = cUFO_MOVE_INTERVAL;
+     ufos = create_ufo()::[];
      powers = [];
    } in
   add_update (AddPlayer (init.redid, Red, init.redpos));
@@ -95,19 +97,9 @@ let handle_time game =
     and all bullet/UFO collisions simultaneously
     3a. process a hit on each UFO for each collision 
     - If UFO was destroyed, remove it and add powers as discussed
-    3b. if either player was hit (while not invincible), 
-    deduct a life from their total, refill their bomb stock, 
-    clear the screen of bullets 
-    (If both players were hit, do the same for both). 
-    Do not deduct more than 1 life in one timestep
     5. check for player/power collision + process power collection
    *)
 
-
-(*For Bomb:    
-  Remove any bullets that the invincible user grazes during duration of bomb
-  No charge accumulated
-*)
   let (redhead, redtail) = 
     match game.redmove with 
     |h::t -> (h, t)
@@ -169,6 +161,11 @@ let handle_time game =
      redinvinc = newinvinc urecord.rlost game.redinvinc;
      blueinvinc = newinvinc urecord.blost game.blueinvinc;
      
+     redbombs = 
+     if urecord.rlost = true then cINITIAL_BOMBS else game.redbombs;
+     bluebombs = 
+     if urecord.blost = true then cINITIAL_BOMBS else game.bluebombs;
+
      redbombinv = newbombinv game.redbombinv urecord.rlost game.redinvinc;
      bluebombinv = newbombinv game.bluebombinv urecord.blost game.blueinvinc;
      
@@ -176,7 +173,15 @@ let handle_time game =
      timer = game.timer -. cUPDATE_TIME;
      
      (*Version 4*)
-     ufos = urecord.ulst;
+     ufospawntimer = if game.ufospawntimer = 0 then cUFO_SPAWN_INTERVAL
+     else game.ufospawntimer - 1;
+     ufomovetimer = if game.ufomovetimer = 0 then cUFO_MOVE_INTERVAL 
+     else game.ufomovetimer - 1;
+     
+     ufos = 
+     if (game.ufomovetimer - 1 = 0) then (update_ufo urecord.ulst) 
+     else urecord.ulst;
+     
      powers = urecord.powerlst
    } in
   add_update (MovePlayer (updated.redid, updated.redpos));
