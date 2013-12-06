@@ -95,32 +95,30 @@ let create_bubble  (target:position) (plpos:position)
 				[b]
 (*helper function creates cTRAIL_NUM*3 trail bullets. 
 * Creates cTRAIL_NUM series of trails, such that the speeds of 
-* the 3 trails in each series are progressively increasing*)
-let create_trail (plpos:position) (pcolor:color) 
+* the trails are progressively increasing*)
+  let create_trail (plpos:position) (pcolor:color) 
   (target:position) (acc:acceleration): bullet list= 
   let ang = deg_to_rad (float_of_int cTRAIL_ANGLE) in 
-  let rec trail n lst= 
-    if n > 0 then 
-    let rec trail_helper n angle lst = 
-      if n > 0 then 
-        let t = 
+  let rec trail nth angle lst= 
+    if nth > 0 then 
+      let t = 
           {b_type = Trail;
           b_id = next_available_id ();
           b_pos = plpos;
           b_vel = 
-            (let next_vel = (init_vel (cTRAIL_SPEED_STEP*n) target plpos) in 
+            (let next_vel = (init_vel (cTRAIL_SPEED_STEP*nth) target plpos) in 
             rotate next_vel angle); 
           b_accel = (if fst(acc) <= cACCEL_LIMIT && fst(acc)<=cACCEL_LIMIT then 
           acc else (0.,0.));
           b_radius = cTRAIL_RADIUS;
           b_color = pcolor} in 
           add_update (AddBullet (t.b_id, t.b_color,t.b_type,t.b_pos));
-          trail_helper (n-1) (angle-.ang) (t::lst)
-      else lst 
-      in let newlst = trail_helper 3 ang lst 
-      in trail (n - 1) newlst
-    else lst 
-  in trail cTRAIL_NUM []
+          if nth mod 3 = 0 then trail (nth-1) (0.) (t::lst)
+          else 
+            if nth mod 3 = 1 then trail (nth-1) (ang) (t::lst)
+            else trail (nth-1) (~-.ang) (t::lst)
+     else lst 
+       in trail (cTRAIL_NUM*3) ang []
 (*create_bullet b target plpos pcolor acc returns a list of bullet(s)
 *of the given bullet type, some or all of which aim toward the target position
 *Bullets have the given acceleration unless it is too large.*)
