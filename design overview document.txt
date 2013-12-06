@@ -43,7 +43,11 @@ We decided upon using records instead of tuples, as it made our code cleaner and
 
 • Implementation. Discuss the implementation strategy you used (top-down, bottom- up). Also include any challenges you ran into while coding, any code reuse or revision you employed, and what the rough division of work was between your group members.
 
-You need to give the course staff enough information so that we can understand your program without looking at the source code. In doing so, you should convince us that you gave careful consideration to the construction of your program.
+Our implementation was more of a bottom-up strategy, since we started with just handling creation of bullets and movements of players and bullets.  We built upon that with collision functions and the Ufo module.  
+
+The major challenge while coding was to make code short and efficient.  We ran into major problems with this in coding the update function, as we coded it at first based on intuitive logic and ended up with a lot of code reusing. We found that separating the update function into different helper functions would ensure shorter code that was easier to test.  We also did our best to eliminate reused code that we didn’t need.  
+
+We divided the work between ourselves by having one member implement Player and Game while the other implemented Bullet and Ufo. We did everything else together.  
 
 Testing: 
 	Describe your test plan, and discuss any issues that you ran into while carrying out this test plan. Are you confident that your testing gives good enough coverage of all possible scenarios? Remember that testing is not something that should only be done at the end, but rather, it should be done incrementally, as you write parts of the program. You need to convince the staff that you exercised due diligence in validating your program.
@@ -62,11 +66,7 @@ Extensibility:
 	• New types of collectible items (besides power).
 	This would not be as simple.  We would need a create function for these items and, depending on when and how they are created, either make separate functions or add to the existing update_ufo function in Bullet, where all the update functions are. However, as long as they are not involved in bullet collisions, it is not too hard to check for them when updating.   
 	• More interesting bomb effects.
-
-
-
-
-
+	It would probably not involve too much change, since bombs are generally handled in Player and only require some minor helper functions in other modules, like the delete_all function in Bullet, which clears the gui of all bullets.  
 
 	• Neutral enemies that fire at both players.
 	This would require major changes to all code because the entire game is built on that there are two players.  We would have to make drastic changes to the update functions that look for bullet collisions.  
