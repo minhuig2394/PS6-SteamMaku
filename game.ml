@@ -30,6 +30,8 @@ type game =
      blueinvinc : int;
      redbombinv : bool;
      bluebombinv : bool;
+     redmercinv : bool;
+     bluemercinv : bool;
      (*version 4 only*)
      redpower : int;
      bluepower : int;
@@ -69,6 +71,8 @@ let init_game () : game =
      blueinvinc = 0;
      redbombinv = false;
      bluebombinv = false;
+     redmercinv = false;
+     bluemercinv = false;
      (*version 4 only*)
      redpower = 0;
      bluepower = 0;
@@ -128,40 +132,46 @@ let handle_time game =
     {game with
      redmove = redtail;
      bluemove = bluetail;
-
-     redpower = newpower game.redpower urecord.rlost urecord.rpower_pts;
-     bluepower = newpower game.bluepower urecord.blost urecord.bpower_pts;
-
-     redcharge = 
-     charge game.redcharge game.redpower urecord.rlost 
-       urecord.rpower_pts game.redbombinv;
-     bluecharge = 
-     charge game.bluecharge game.bluepower urecord.blost 
-       urecord.bpower_pts game.bluebombinv;
-
+     
      redpos = redp.p_pos;
      bluepos = bluep.p_pos;
      
-     redlife = newlife game.redlife urecord.rlost;
-     bluelife = newlife game.bluelife urecord.blost;
+     redpower = newpower urecord.rlost game.redmercinv game.redpower urecord.rpower_pts;
+     bluepower = newpower urecord.blost game.bluemercinv game.bluepower urecord.bpower_pts;
+
+     redcharge = 
+     charge game.redcharge game.redpower urecord.rlost game.redmercinv
+       urecord.rpower_pts game.redbombinv;
+     bluecharge = 
+     charge game.bluecharge game.bluepower urecord.blost game.bluemercinv
+       urecord.bpower_pts game.bluebombinv;
      
-     redscore = newscore urecord.blost urecord.rgraze_pts 
+     redlife = 
+     	if (urecord.rlost = true && game.redmercinv = false) then game.redlife - 1 else game.redlife;
+     bluelife = 
+     	if (urecord.blost = true && game.bluemercinv = false) then game.bluelife - 1 else game.bluelife;
+     
+     redscore = newscore urecord.blost game.bluemercinv urecord.rgraze_pts 
        urecord.rpower_pts game.redscore;
-     bluescore = newscore urecord.rlost urecord.bgraze_pts
+     bluescore = newscore urecord.rlost game.redmercinv urecord.bgraze_pts
        urecord.bpower_pts game.bluescore;
      
-     redinvinc = newinvinc urecord.rlost game.redinvinc;
-     blueinvinc = newinvinc urecord.blost game.blueinvinc;
+     redinvinc = newinvinc urecord.rlost game.redmercinv game.redinvinc;
+     blueinvinc = newinvinc urecord.blost game.bluemercinv game.blueinvinc;
+     
+     redmercinv = if (urecord.rlost = true && game.redmercinv = false) then true else false;
+     bluemercinv = if (urecord.blost = true && game.bluemercinv = false) then true else false;
      
      redbombs = 
-     if urecord.rlost = true then cINITIAL_BOMBS else game.redbombs;
+     if (urecord.rlost = true && game.redmercinv = false) then cINITIAL_BOMBS else game.redbombs;
      bluebombs = 
-     if urecord.blost = true then cINITIAL_BOMBS else game.bluebombs;
+     if (urecord.blost = true && game.bluemercinv = false) then cINITIAL_BOMBS else game.bluebombs;
 
-     redbombinv = newbombinv game.redbombinv urecord.rlost game.redinvinc;
-     bluebombinv = newbombinv game.bluebombinv urecord.blost game.blueinvinc;
+     redbombinv = newbombinv game.redbombinv urecord.rlost game.redmercinv game.redinvinc;
+     bluebombinv = newbombinv game.bluebombinv urecord.blost game.redmercinv game.blueinvinc;
      
-     bullets = if urecord.rlost = true || urecord.blost = true then [] else urecord.bullet_lst;
+     bullets = if (urecord.rlost = true && game.redmercinv = false) || 
+     	(urecord.blost = true && game.bluemercinv = false) then [] else urecord.bullet_lst;
      timer = game.timer -. cUPDATE_TIME;
      
      (*Version 4*)
