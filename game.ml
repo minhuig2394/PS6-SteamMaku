@@ -28,11 +28,12 @@ type game =
      bluebombs : int;
      redinvinc : int;
      blueinvinc : int;
+     redbombinv : bool;
+     bluebombinv : bool;
      (*version 4 only*)
      redpower : int;
      bluepower : int;
      ufotimer : int;
-     numpower : int;
      ufos : ufo list;
      powers : power list;
    }
@@ -63,13 +64,14 @@ let init_game () : game =
      (*version 2 only*)
      redbombs = cINITIAL_BOMBS;
      bluebombs = cINITIAL_BOMBS;
-     redinvinc = cBOMB_DURATION;
-     blueinvinc = cBOMB_DURATION;
+     redinvinc = 0;
+     blueinvinc = 0;
+     redbombinv = false;
+     bluebombinv = false;
      (*version 4 only*)
      redpower = 0;
      bluepower = 0;
      ufotimer = 0;
-     numpower = 0;
      ufos = [];
      powers = [];
    } in
@@ -89,7 +91,6 @@ let init_game () : game =
 
 let handle_time game =
   (*1. Update positions and velocities of all bullets + UFOs
-    2. Update positions of all players (depending on normal or focused)
     3. Compile a list of all bullet/player collisions
     and all bullet/UFO collisions simultaneously
     3a. process a hit on each UFO for each collision 
@@ -101,6 +102,12 @@ let handle_time game =
     Do not deduct more than 1 life in one timestep
     5. check for player/power collision + process power collection
    *)
+
+
+(*For Bomb:    
+  Remove any bullets that the invincible user grazes during duration of bomb
+  No charge accumulated
+*)
   let (redhead, redtail) = 
     match game.redmove with 
     |h::t -> (h, t)
@@ -109,19 +116,80 @@ let handle_time game =
     match game.bluemove with
     |h::t -> (h, t)
     |[] -> ((Neutral, Neutral), []) in
+  let redp : player_char = 
+    {p_id = game.redid; 
+     (*red player position updated*)
+     p_pos = move_player game.redpos redhead game.redfoc; 
+     p_focused = game.redfoc;
+     p_radius = cHITBOX_RADIUS;
+     p_color = Red} in
+  let bluep : player_char = 
+    {p_id = game.blueid; 
+     (*blue player position updated*)
+     p_pos = move_player game.bluepos bluehead game.bluefoc;
+     p_focused = game.bluefoc;
+     p_radius = cHITBOX_RADIUS;
+     p_color = Blue} in
+  let ui : update_info = 
+    {red = redp;
+     blue = bluep;
+     rinvincible = game.redbombinv;
+     binvincible = game.bluebombinv;
+     blst = game.bullets;
+     ufolst = game.ufos;
+     pwrlst = game.powers;
+   } in 
+  let urecord = update_all ui in 
   let updated =
     {game with
      redmove = redtail;
      bluemove = bluetail;
-     redpos = if redhead = (Neutral, Neutral) then game.redpos 
-     else
-       move_player game.redpos redhead game.redfoc;
-     bluepos = if bluehead = (Neutral, Neutral) then game.bluepos
-     else 
-       move_player game.bluepos bluehead game.bluefoc;
-     timer = game.timer -. cUPDATE_TIME} in
+
+     redpower = newpower game.redpower urecord.rlost urecord.rpower_pts;
+     bluepower = newpower game.bluepower urecord.blost urecord.bpower_pts;
+
+     redcharge = 
+     charge game.redcharge game.redpower urecord.rlost 
+       urecord.rpower_pts game.redbombinv;
+     bluecharge = 
+     charge game.bluecharge game.bluepower urecord.blost 
+       urecord.bpower_pts game.bluebombinv;
+
+     redpos = redp.p_pos;
+     bluepos = bluep.p_pos;
+     
+     redlife = newlife game.redlife urecord.rlost;
+     bluelife = newlife game.bluelife urecord.blost;
+     
+     redscore = newscore urecord.blost urecord.rgraze_pts 
+       urecord.rpower_pts game.redscore;
+     bluescore = newscore urecord.rlost urecord.bgraze_pts
+       urecord.bpower_pts game.bluescore;
+     
+     redinvinc = newinvinc urecord.rlost game.redinvinc;
+     blueinvinc = newinvinc urecord.blost game.blueinvinc;
+     
+     redbombinv = newbombinv game.redbombinv urecord.rlost game.redinvinc;
+     bluebombinv = newbombinv game.bluebombinv urecord.blost game.blueinvinc;
+     
+     bullets = urecord.bullet_lst;
+     timer = game.timer -. cUPDATE_TIME;
+     
+     (*Version 4*)
+     ufos = urecord.ulst;
+     powers = urecord.powerlst
+   } in
   add_update (MovePlayer (updated.redid, updated.redpos));
   add_update (MovePlayer (updated.blueid, updated.bluepos));
+  add_update (SetLives (Red, updated.redlife));
+  add_update (SetLives (Blue, updated.bluelife));
+  add_update (SetScore (Red, updated.redscore));
+  add_update (SetScore (Blue, updated.bluescore));
+  add_update (SetPower (Red, updated.redpower));
+  add_update (SetPower (Blue, updated.bluepower));
+  add_update (SetCharge (Red, updated.redcharge));
+  add_update (SetCharge (Blue, updated.bluecharge));
+	    
   let r = (g_result updated.redlife updated.bluelife updated.redscore
       updated.bluescore updated.timer) in
   match r with
@@ -169,30 +237,33 @@ let handle_action game col act =
 	 redfoc = x
        } in updated
   |Blue, Bomb -> 
-      let updated = 
-	{game with 
-	 bullets = [];
-	 blueinvinc = cBOMB_DURATION;
-	 bluebombs = game.bluebombs - 1
-       } in 
-  add_update (UseBomb (Blue));
-  add_update (SetBombs (Blue, updated.bluebombs));
-  updated
+      if game.bluebombs = 0 then game
+      else
+	let updated = 
+	  {game with 
+	   bullets = [];
+	   blueinvinc = cBOMB_DURATION;
+	   bluebombinv = true;
+	   bluebombs = game.bluebombs - 1
+	 } in 
+	delete_all game.bullets;
+	add_update (UseBomb (Blue));
+	add_update (SetBombs (Blue, updated.bluebombs));
+	updated
   |Red, Bomb -> 
-      let updated = 
-	{game with 
-	 bullets = [];
-	 redinvinc = cBOMB_DURATION;
-	 redbombs = game.redbombs - 1
-       } in 
-  add_update (UseBomb (Red));
-  add_update (SetBombs (Red, updated.redbombs));
-  updated
-
-(*For Bomb:    
-  Remove any bullets that the invincible user grazes during duration of bomb
-  No charge accumulated
-*)
+      if game.redbombs = 0 then game
+      else
+	let updated = 
+	  {game with 
+	   bullets = [];
+	   redinvinc = cBOMB_DURATION;
+	   redbombinv = true;
+	   redbombs = game.redbombs - 1
+	 } in 
+	delete_all game.bullets;
+	add_update (UseBomb (Red));
+	add_update (SetBombs (Red, updated.redbombs));
+	updated
 
 
 let get_data game =
