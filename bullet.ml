@@ -207,7 +207,7 @@ let update_all (updlst: update_info): total_update=
   let rec update_powers pwrs plst= 
     match pwrs with 
     |h::t -> 
-    if out h then ((add_update (DeleteBullet h.b_id);update_powers t plst)
+    if out h then (add_update (DeleteBullet h.b_id);update_powers t plst)
     else 
       if hit h updlst.red && not (hit h updlst.blue) then 
         (add_update (DeleteBullet h.b_id);
