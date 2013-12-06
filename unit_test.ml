@@ -271,7 +271,7 @@ let updlst=
     pwrlst= []}
 
 let update_all_test = 
-	let u = update_all ublst in 
+	let u = update_all updlst in 
 	u.rlost = true &&
    u.blost =false &&
     u.rgraze_pts = 0 && 
@@ -301,16 +301,7 @@ let update_all_test1 =
     u.ulst = [] && 
     not(u.powerlst= []) 
 
-	{rlost =true; 
-   blost =false; 
-    rgraze_pts = 0; 
-    bgraze_pts= 0; 
-    bullet_lst = []; 
-    ulst = [{ufo3 with u_blue_hits = 1}]; 
-    powerlst= [];
-    rpower_pts= 0;
-    bpower_pts= 0;
-    }
+
 
 
 

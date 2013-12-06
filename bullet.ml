@@ -146,31 +146,25 @@ let determine (hitufo: bool)(h:bullet) (player:player_char)
   if (out h) then 
     (add_update (DeleteBullet h.b_id);update t pwr)
   else 
-    if invincible = true then 
-      if (hit h player) then 
-        (add_update (DeleteBullet h.b_id);update t pwr)
-       else 
-        if (grazed h player) then (add_update (Graze);
-          if player.p_color = Blue then 
-          (updates.bgraze_pts <- updates.bgraze_pts + 1;update t pwr)
-          else (updates.rgraze_pts <- updates.rgraze_pts + 1;update t pwr))
-        else 
-          if hitufo = true then (add_update (DeleteBullet h.b_id);update t pwr)
-          else 
-            (updates.bullet_lst <- (set_pos h)::updates.bullet_lst; update t pwr)
-    else 
-      if hit h player then 
+    if hit h player then 
+      if invincible = true then (add_update (DeleteBullet h.b_id);update t pwr)
+      else 
         if player.p_color = Blue then (updates.blost <- true;update t pwr)
         else (updates.rlost <- true; update t pwr)
       else 
         if grazed h player then 
-          (add_update (Graze);
-          if player.p_color = Blue then 
-            (updates.bgraze_pts <- updates.bgraze_pts + 1;
-          updates.bullet_lst <- (set_pos h)::updates.bullet_lst; update t pwr)
-           else (updates.rgraze_pts <- updates.rgraze_pts + 1;
-           updates.bullet_lst <- (set_pos h)::updates.bullet_lst; update t pwr))
-         else
+          if invincible = true then 
+            (add_update (DeleteBullet h.b_id); add_update (Graze);
+            if player.p_color = Blue then 
+            (updates.bgraze_pts <- updates.bgraze_pts + 1;update t pwr)
+            else (updates.rgraze_pts <- updates.rgraze_pts + 1;update t pwr))
+          else 
+            if player.p_color = Blue then 
+              (updates.bgraze_pts <- updates.bgraze_pts + 1;
+              updates.bullet_lst <- (set_pos h)::updates.bullet_lst; update t pwr)
+            else (updates.rgraze_pts <- updates.rgraze_pts + 1;
+           updates.bullet_lst <- (set_pos h)::updates.bullet_lst; update t pwr)
+        else
           if hitufo = true then (add_update (DeleteBullet h.b_id);update t pwr) 
           else
             (updates.bullet_lst <- (set_pos h)::updates.bullet_lst; update t pwr)
@@ -191,7 +185,7 @@ let update_bullets (rp:player_char) (bp:player_char) (rinvincible :bool)
     in updates.ulst <- u; begin 
       match h.b_color with
       |Red -> determine hitufo h bp binvincible update updates t pwr
-      |Blue -> determine hitufo h rp binvincible update updates t pwr
+      |Blue -> determine hitufo h rp rinvincible update updates t pwr
       end
     |[] -> (updates,pwr)
   in update blst pwr
