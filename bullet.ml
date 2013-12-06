@@ -137,7 +137,7 @@ let update_ufos bul updates=
         else {elem with u_blue_hits = (elem.u_blue_hits + 1)})
       in 
         (remove_ufo updated_ufo acc)
-      else acc) ([],[]) updates.ulst
+      else (fst acc),elem::(snd acc)) ([],[]) updates.ulst
 
   let determine (h:bullet) (player:player_char) 
     (invincible:bool) (update:'a) (updates:total_update) (t:bullet list) (pwr:power list)= 
