@@ -179,8 +179,10 @@ let handle_time game =
      else game.ufomovetimer - 1;
      
      ufos = 
-     if (game.ufomovetimer - 1 = 0) then (update_ufo urecord.ulst) 
-     else urecord.ulst;
+     (let lst = if (game.ufomovetimer = 0) then (update_ufo urecord.ulst) 
+     else urecord.ulst in 
+     let newufos = if (game.ufospawntimer = 0) 
+     then (create_ufo()::lst) else lst in newufos);
      
      powers = urecord.powerlst
    } in
