@@ -7,16 +7,40 @@ Summary :
 	Summarize the rest of your overview. Anything you mention here should be described in more detail in the rest of your document.
 
 Instructions:
-	 Include instructions on how to compile and run your game.
+	 In order to run our game, the Makefile section must be edited to look like this:
+	 game/game.exe:               \
+        	shared/shared.cma    \
+        	game/netgraphics.cmo \
+        	game/ufo.cmo         \
+        	game/bullet.cmo      \
+        	game/player.cmo      \
+        	game/game.cmo        \
+        	game/server.cmo
 
 Design and implementation:
 	 Document and discuss the choices you made in order to
 	 meet the game specification. There should be several aspects of this documentation.
 
-• Modules. Discuss how you split the program into modules, what purpose these modules serve, and any invariants maintained. Also discuss their interfaces.
+• Modules:
+Discuss how you split the program into modules, what purpose these modules serve, and any invariants maintained. Also discuss their interfaces.
+
+Aside from the game.ml file, we created separate modules for players, bullets, and ufos 
+- resulting in the files player.ml, player.mli, bullet.ml, bullet.mli, ufo.ml, ufo.mli
+
+The modules were created so that game.ml would not be overloaded with code, thus making coding and debugging more difficult. The modules allow us to separate code more efficiently and locate bugs in the code faster. The modules also allow us to individually code without having to rely on one another's code. 
+
+We decided to put UFOs and Powers in one module because you only create Powers when UFOs are destroyed.
+
 • Architecture. Discuss how your modules interact with each other, how they com- municate with each other, and how they depend on each other.
+
+The Player module calls upon the Bullet module in order to calculate whether or not the player has enough charge to shoot the bullets.
+
 • Code design. Discuss any notable algorithms employed by your program, and which data structures you used. Mention any tradeoffs you made between code simplicity and efficiency.
+
+We decided upon using a record instead of a tuple, as it made our code cleaner and easier to read. It was also easier to code as we could easily edit parts of the record, instead of having to match the tuple in order to change information of the tuple. We chose not to make the record mutable as that would've posed concurrency problems.
+
 • Implementation. Discuss the implementation strategy you used (top-down, bottom- up). Also include any challenges you ran into while coding, any code reuse or revi- sion you employed, and what the rough division of work was between your group members.
+
 You need to give the course staff enough information so that we can understand your program without looking at the source code. In doing so, you should convince us that you gave careful consideration to the construction of your program.
 
 Testing: 
@@ -33,9 +57,15 @@ Known problems:
 	 
 Comments: 
 	Express your opinions about the assignment. This section of the overview document will not be graded, but it can earn good karma. You might address such questions as:
+	
 	• How much time did you spend on the assignment? How was it divided between designing, coding, and testing?
+	
 	• What advice should we have given you before you started?
+	
 	• What was surprising about the assignment?
+	
 	• What was hard about the assignment?
+	
 	• What did you like or dislike about the assignment?
+	
 	• What would you change about the assignment?
