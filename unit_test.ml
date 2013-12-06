@@ -200,13 +200,13 @@ let update_ufos_test1 =
 
 let update_bullets_test = 
 	let new_update,pwr = update_bullets rplayer bplayer false
-  	false [] ulist1 [] in 
+  	false bullets3 ulist1 [] in 
   	new_update = {rlost =true; 
    blost =false; 
     rgraze_pts = 0; 
     bgraze_pts= 0; 
-    bullet_lst = bullets3; 
-    ulst = ulist1; 
+    bullet_lst = []; 
+    ulst = [ufo1]; 
     powerlst= pwr;
     rpower_pts= 0;
     bpower_pts= 0;
@@ -231,7 +231,6 @@ let update_bullets_test1 =
     rpower_pts= 0;
     bpower_pts= 0;
     }
-
 
 let update_bullets_test2 = 
 	let new_update,pwr = update_bullets rplayer bplayer false

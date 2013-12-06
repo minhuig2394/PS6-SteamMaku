@@ -3,7 +3,8 @@ open Constants
 open Util 
 open Netgraphics 
 
-let init_vel speed target pos= 
+(*generates an initial velocity*)
+let init_vel (speed:int) (target:position) (pos:position):velocity= 
   let sp = float_of_int speed in 
   let x = ((fst target) -. (fst pos)) in
   let y = ((snd target) -. (snd pos)) in 
@@ -11,26 +12,20 @@ let init_vel speed target pos=
   (sp*.cosine,sp*.sine)
 
 (*determines if two circles intersect*)
-let collide (center1:position) (r1:int) (center2:position) (r2:int) = 
+let collide (center1:position) (r1:int) (center2:position) (r2:int):bool = 
   let radius = float_of_int (r1 + r2) in 
   let diff = subt_v center1 center2 in 
   ((fst diff)*.(fst diff) +. (snd diff)*.(snd diff)) < radius*.radius 
-  
-let hit_ufo (b:bullet) (u:ufo) = 
+(*determines if a ufo is hit by a bullet*)
+let hit_ufo (b:bullet) (u:ufo) :bool= 
   collide b.b_pos b.b_radius u.u_pos u.u_radius
-
-let grazed_ufo (b:bullet) (u:ufo) = 
-  (not (hit_ufo b u)) && (collide b.b_pos cGRAZE_RADIUS u.u_pos u.u_radius) 
-
-let set_pos_ufo (b:ufo) = 
+(*sets new position for a ufo,returns the ufo with edited postion*)
+let set_pos_ufo (b:ufo) :ufo= 
   let new_pos = add_v b.u_pos b.u_vel in 
     (add_update (MoveUFO (b.u_id,new_pos)));
     {b with 
     u_pos = new_pos}
-
-let roll x= let r = Random.int 2 in 
-  if r = 0 then x else ~-.x
-
+(*generates a random position to spawn a ufo*)
 let random_position x=
   let onef = 1./.4. *. (float_of_int cBOARD_WIDTH) in  
   let threef = 3./.4. *. (float_of_int cBOARD_WIDTH) in 
@@ -43,17 +38,20 @@ let random_position x=
       (randx,randy+.halfy)
     else 
       (randx, randy)
-
-let random_pradius radius center =
+(*gives a random position to create a new power up within
+*a certain radius of the ufo*)
+let random_pradius (radius:int) (center:position):position =
   let randr = Random.float (float radius) in 
   let randa = Random.int 360 in 
   let randx,randy = rotate_deg (0.,randr) (float randa) in 
   add_v center (randx,randy)
-  
-let random_vel upos= 
+(*generates a random velocity to assign a new ufo*)
+let random_vel (upos:position):velocity= 
   let r = random_position 1 in 
   init_vel cUFO_SPEED r upos
-
+(*create_ufo x creates a new ufo.  The parameter is 
+*arbitrary.  It just guarantees a new ufo every time you 
+*call the function*)
 let create_ufo = fun x ->
   let rdir = random_position 0 in 
   let u = 
@@ -64,8 +62,9 @@ let create_ufo = fun x ->
     u_red_hits = 0;
    u_blue_hits = 0
   } in add_update (AddUFO (u.u_id, u.u_pos));u
-
-let create_power  (u:ufo) (rpos:position) (bpos:position)= 
+(*create_power creates cUFO_POWER_NUM power ups within a 
+*certain radius of the ufo, returns a list of those power ups*)
+let create_power  (u:ufo) (rpos:position) (bpos:position): power list= 
   let h = (u.u_red_hits + u.u_blue_hits) in 
   let reds = (float u.u_red_hits/. float h)*.(float cUFO_POWER_NUM) in 
 	let rec create n r plst= 
@@ -84,8 +83,8 @@ let create_power  (u:ufo) (rpos:position) (bpos:position)=
 		create (n - 1) (r +. 1.) (p::plst)
   else plst
   in create cUFO_POWER_NUM 0.0 []
-
-let update_ufo ufolst= 
+(*update_ufo assigns a new velocity for each member of a ufo list.*)
+let update_ufo (ufolst:ufo list): ufo list= 
 	let rec update ulst rlst = 
 	match ulst with 
 	|h::t ->
