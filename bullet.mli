@@ -1,5 +1,24 @@
-type total_update 
-type update_info
+type total_update = 
+  {mutable rlost:bool; 
+   mutable blost:bool; 
+    mutable rgraze_pts: int; 
+    mutable bgraze_pts: int; 
+    mutable bullet_lst: bullet list; 
+    mutable ulst: ufo list; 
+    mutable powerlst: power list;
+    mutable rpower_pts: int;
+    mutable bpower_pts: int;
+    }
+
+  type update_info = 
+    {red: player_char; 
+    blue: player_char;
+    rinvincible :bool; 
+    binvincible:bool; 
+    blst: bullet list; 
+    ufolst: ufo list; 
+    pwrlst: power list}
+    
 (*create_bullet takes in a bullet_type, a target position, 
 * a player color, and acceleration 
 * and returns a list of bullets with that bullet_type*)

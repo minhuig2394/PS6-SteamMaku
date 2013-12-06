@@ -166,7 +166,7 @@ let determine (hitufo: bool)(h:bullet) (player:player_char)
         if grazed h player then 
           (add_update (Graze);
           if player.p_color = Blue then 
-            updates.bgraze_pts <- updates.bgraze_pts + 1;
+            (updates.bgraze_pts <- updates.bgraze_pts + 1;
           updates.bullet_lst <- (set_pos h)::updates.bullet_lst; update t pwr)
            else (updates.rgraze_pts <- updates.rgraze_pts + 1;
            updates.bullet_lst <- (set_pos h)::updates.bullet_lst; update t pwr))
