@@ -163,18 +163,18 @@ let determine (hitufo: bool)(h:bullet) (player:player_char)
   else 
     if hit h player then 
       (add_update (DeleteBullet h.b_id);
-      if invincible = true then (update t pwr)
+      (if invincible = true then (update t pwr)
       else 
         if player.p_color = Blue then (updates.blost <- true;update t pwr)
-        else (updates.rlost <- true;update t pwr))
+        else (updates.rlost <- true;update t pwr)))
     else 
         if grazed h player then 
           (add_update (Graze);
-          if invincible = true then 
+          (if invincible = true then 
             (add_update (DeleteBullet h.b_id); 
             if player.p_color = Blue then 
             (updates.bgraze_pts <- updates.bgraze_pts + 1;update t pwr)
-            else (updates.rgraze_pts <- updates.rgraze_pts + 1;update t pwr))
+            else (updates.rgraze_pts <- updates.rgraze_pts + 1;update t pwr)))
           else 
             (updates.bullet_lst <- (set_pos h)::updates.bullet_lst;
             if player.p_color = Blue then 
