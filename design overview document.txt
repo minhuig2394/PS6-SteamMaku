@@ -32,12 +32,51 @@ The modules were created so that game.ml would not be overloaded with code, thus
 We decided to put UFOs and Powers in one module because you only create power ups when UFOs are destroyed. Bullet is dedicated for creating bullets and for updating, so it made sense that the other types of objects are created and handled elsewhere. 
 
 Bullet’s interface only provides the function names for creating bullets, updating and deleting.  This is because they are the only ones needed by other modules and all other functions in Bullet are basically helper functions for these main functions.  The types of the records used in Bullet are exposed in the mli file because they are needed in the communication between Game and Bullet.  
+The following are included:
+type update_info = 
+  { red: Definitions.player_char; 
+    blue: Definitions.player_char;
+    rinvincible :bool; 
+    binvincible:bool; 
+    blst: Definitions.bullet list; 
+    ufolst: Definitions.ufo list; 
+    pwrlst: Definitions.power list}
+This record is taken as a parameter in the update function because there are too many parameters to keep track of. It makes the update function neater and ensures that the appropriate information is sent to the update function from Game.  
+type total_update = 
+  {mutable rlost:bool; 
+   mutable blost:bool; 
+    mutable rgraze_pts: int; 
+    mutable bgraze_pts: int; 
+    mutable bullet_lst: Definitions.bullet list; 
+    mutable ulst: Definitions.ufo list; 
+    mutable powerlst: Definitions.power list;
+    mutable rpower_pts: int;
+    mutable bpower_pts: int;
+    }
+This is the single mutable record in the problem set that we use and is used to keep track of updated information to send back to player.  
+
+val create_bullet: this function matches a bullet type to create a list of bullets of the appropriate type.  This is used in Player for the shooting function.  
+val update_all: this function updates everything in the game.  
+val delete_all:this function deletes all bullets from the gui.  
 
 Ufo’s interface provides functions required in Game and Bullet.  It includes the functions for creating UFOs and changing the velocity of UFOs used in Game and the collision detection function and position setting of UFOs required for the update functions in Bullet.  
+Ufo’s interface includes the following:
+val hit_ufo : determines whether there is a collision between a bullet and a ufo, used in Bullet
+val set_pos_ufo:sets the new position of a UFO, used in Bullet.
+val create_power : creates power ups and returns as a list of power ups, used in Bullet.
+val create_ufo :creates ufos, used in Game
+val update_ufo :reassigns the velocity of UFOs, used in Game 
 
-Player’s interface provides functions 
-
-
+Player’s interface provides the functions:
+ val move_player, which moves the player in Game.
+ val g_result, which determines that state of the game
+ val shoot, which is a helper function that when given a bullet type, creates the bullet if the player has enough charge.  It uses the create functions in Bullet.
+ val new_life, which deducts a life if a player is hit
+ val newscore, which returns the updated score of a player
+ val newinvinc, which is a helper method for keeping track of how long a player is invincible.
+ val new power, which is a helper function for calculating charge.  
+ val charge, which uses newpower to determine the charge of a player
+ val newbombinv,which is a helper function for bombing.  
 
 
 • Architecture. Discuss how your modules interact with each other, how they communicate with each other, and how they depend on each other.
