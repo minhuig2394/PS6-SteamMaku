@@ -42,8 +42,8 @@ let set_pos (b:bullet):bullet =
 let out (b:bullet) :bool= not(
   (((fst b.b_pos)+. (float b.b_radius)) >= 0. && 
   ((snd b.b_pos)+. (float b.b_radius)) >= 0. && 
-  ((fst b.b_pos)+. (float b.b_radius)) <= float cBOARD_WIDTH && 
-  ((snd b.b_pos)+. (float b.b_radius)) <= float cBOARD_HEIGHT))
+  ((fst b.b_pos)-. (float b.b_radius)) <= float cBOARD_WIDTH && 
+  ((snd b.b_pos)-. (float b.b_radius)) <= float cBOARD_HEIGHT))
 (*determines if a bullet's radius and a player's radius intersect*)
 let hit (b:bullet) (p:player_char) :bool= 
   collide b.b_pos b.b_radius p.p_pos p.p_radius
@@ -207,6 +207,8 @@ let update_all (updlst: update_info): total_update=
   let rec update_powers pwrs plst= 
     match pwrs with 
     |h::t -> 
+    if out h then ((add_update (DeleteBullet h.b_id);update_powers t plst)
+    else 
       if hit h updlst.red && not (hit h updlst.blue) then 
         (add_update (DeleteBullet h.b_id);
         updates.rpower_pts <- updates.rpower_pts + 1;
