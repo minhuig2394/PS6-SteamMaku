@@ -117,8 +117,8 @@ let handle_time game =
   let ui : update_info = 
     {red = redp;
      blue = bluep;
-     rinvincible = if game.redinvinc - 1 = 0 then false else true;
-     binvincible = if game.blueinvinc - 1 = 0 then false else true;
+     rinvincible = game.redbombinv;
+     binvincible = game.bluebombinv;
      blst = game.bullets;
      ufolst = game.ufos;
      pwrlst = game.powers;
