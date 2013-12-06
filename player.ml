@@ -41,34 +41,34 @@ let shoot btype tpos plpos acc charge color =
   else 
     if charge < cBUBBLE_COST then ([], 0)
     else (create_bullet btype tpos plpos color acc, cBUBBLE_COST)
+    
 
-let newlife current hit = 
-  if hit = true then current - 1
-  else current
-
-let newscore enemyhit grazes powers score =
+let newscore enemyhit enemymerc grazes powers score =
   let gpoints = grazes * cGRAZE_POINTS in
   let powpoints = powers * cPOWER_POINTS in
-  if enemyhit = true then
+  if (enemyhit = true && enemymerc = false) then
     gpoints + powpoints + cKILL_POINTS + score
   else gpoints + powpoints + score
+  
 
-let newinvinc hit current =
-  if hit = true then cINVINCIBLE_FRAMES
-  else current - 1
+let newinvinc hit mercinv curr =
+  if (hit = true && mercinv = false)then cINVINCIBLE_FRAMES
+  else curr - 1
 
-let newpower curpower hit acc =
-  if hit = true then (curpower + acc) / 2 
-  else curpower + acc
+  
+let newpower lost mercinv currpow npow = 
+  if (lost = true && merc = false) then 
+   	(currpow + npow) / 2 else currpow + npow
+     	
 
-let charge current cpower hit acc bombinv =
-  if bombinv = true then current 
+let charge curr cpower hit mercinv acc bombinv =
+  if bombinv = true then curr 
   else
-    let pow = newpower cpower hit acc in
-    if current = cCHARGE_MAX then cCHARGE_MAX
-    else if current + pow + cCHARGE_RATE >= cCHARGE_MAX then cCHARGE_MAX
-    else current + cCHARGE_RATE + pow
+    let powe = newpower hit mercinv cpower acc in
+    if curr = cCHARGE_MAX then cCHARGE_MAX
+    else if curr + powe + cCHARGE_RATE >= cCHARGE_MAX then cCHARGE_MAX
+    else curr + cCHARGE_RATE + powe
 
-let newbombinv cbombinv hit currinv = 
-  if newinvinc hit currinv = 0 then false 
+let newbombinv cbombinv hit mercinv currinv = 
+  if (newinvinc hit mercinv currinv) = 0 then false 
   else cbombinv
