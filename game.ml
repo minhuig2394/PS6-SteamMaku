@@ -161,7 +161,7 @@ let handle_time game =
      redbombinv = newbombinv game.redbombinv urecord.rlost game.redinvinc;
      bluebombinv = newbombinv game.bluebombinv urecord.blost game.blueinvinc;
      
-     bullets = urecord.bullet_lst;
+     bullets = if urecord.rlost = true || urecord.blost = true then [] else urecord.bullet_lst;
      timer = game.timer -. cUPDATE_TIME;
      
      (*Version 4*)
