@@ -168,7 +168,7 @@ let handle_time game =
      if (urecord.blost = true && game.bluemercinv = false) then cINITIAL_BOMBS else game.bluebombs;
 
      redbombinv = newbombinv game.redbombinv urecord.rlost game.redmercinv game.redinvinc;
-     bluebombinv = newbombinv game.bluebombinv urecord.blost game.redmercinv game.blueinvinc;
+     bluebombinv = newbombinv game.bluebombinv urecord.blost game.bluemercinv game.blueinvinc;
      
      bullets = if (urecord.rlost = true && game.redmercinv = false) || 
      	(urecord.blost = true && game.bluemercinv = false) then [] else urecord.bullet_lst;
