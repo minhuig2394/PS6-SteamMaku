@@ -171,7 +171,8 @@ let handle_time game =
      bluebombinv = newbombinv game.bluebombinv urecord.blost game.bluemercinv game.blueinvinc;
      
      bullets = if (urecord.rlost = true && game.redmercinv = false) || 
-     	(urecord.blost = true && game.bluemercinv = false) then [] else urecord.bullet_lst;
+     	(urecord.blost = true && game.bluemercinv = false) 
+     	then [] else urecord.bullet_lst;
      	
      timer = game.timer -. cUPDATE_TIME;
      
@@ -189,6 +190,9 @@ let handle_time game =
      
      powers = urecord.powerlst
    } in
+   delete_all (if (urecord.rlost = true && game.redmercinv = false) || 
+     	(urecord.blost = true && game.bluemercinv = false) 
+  then urecord.bullet_lst else []);
   add_update (MovePlayer (updated.redid, updated.redpos));
   add_update (MovePlayer (updated.blueid, updated.bluepos));
   add_update (SetLives (Red, updated.redlife));
