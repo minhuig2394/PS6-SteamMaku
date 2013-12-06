@@ -115,6 +115,13 @@ let ufo4 = {u_id = 53;
 			u_red_hits = 7;
 			u_blue_hits = 1;
 			 }
+let ulist = []
+let ulist1 = [ufo1]
+let ulist2 = [ufo1;ufo2;ufo3;ufo4]
+let bullets = [bullet1;bullet2;bullet3;bullet4;bullet5;bullet6]
+let bullets2 = []
+let bullets3 = [bullet1]
+let bullets4 = [bullet2;bullet3;bullet4]
 
 let update1 = {rlost =false; 
    				blost =false; 
@@ -156,13 +163,7 @@ let update4 = {rlost =false;
     			rpower_pts= 0;
     			bpower_pts= 0;
     			}
-let ulist = []
-let ulist1 = [ufo1]
-let ulist2 = [ufo1;ufo2;ufo3;ufo4]
-let bullets = [bullet1;bullet2;bullet3;bullet4;bullet5;bullet6]
-let bullets2 = []
-let bullets3 = [bullet1]
-let bullets4 = [bullet2;bullet3;bullet4]
+
 
 let collide_test = (collide (rplayer.p_pos) (rplayer.p_radius) (bullet1.b_pos) (bullet1.b_radius)) = true 
 let collide_test2 = (collide (rplayer.p_pos) (rplayer.p_radius) (bullet4.b_pos) (bullet4.b_radius)) = false
