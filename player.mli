@@ -17,14 +17,12 @@ val shoot: Definitions.bullet_type -> Definitions.position ->
   Definitions.position -> Definitions.acceleration -> int 
     -> Definitions.color -> (Definitions.bullet list * int)
 
-val newlife: int -> bool -> int
+val newscore: bool -> bool -> int -> int -> int -> int
 
-val newscore: bool -> int -> int -> int -> int
+val newinvinc: bool -> bool -> int -> int
 
-val newpower: int -> bool -> int -> int
+val newpower: bool -> bool -> int -> int -> int
 
-val newinvinc: bool -> int -> int
+val charge: int -> int -> bool -> bool -> int -> bool -> int
 
-val charge: int -> int -> bool -> int -> bool -> int
-
-val newbombinv: bool -> bool -> int -> bool
+val newbombinv: bool -> bool -> bool -> int -> bool
