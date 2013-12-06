@@ -61,8 +61,14 @@ let newpower curpower hit acc =
   if hit = true then (curpower + acc) / 2 
   else curpower + acc
 
-let charge current cpower hit acc =
-  let pow = newpower cpower hit acc in
-  if current = cCHARGE_MAX then cCHARGE_MAX
-  else if current + pow + cCHARGE_RATE >= cCHARGE_MAX then cCHARGE_MAX
-  else current + cCHARGE_RATE + pow
+let charge current cpower hit acc bombinv =
+  if bombinv = true then current 
+  else
+    let pow = newpower cpower hit acc in
+    if current = cCHARGE_MAX then cCHARGE_MAX
+    else if current + pow + cCHARGE_RATE >= cCHARGE_MAX then cCHARGE_MAX
+    else current + cCHARGE_RATE + pow
+
+let newbombinv cbombinv hit currinv = 
+  if newinvinc hit currinv = 0 then false 
+  else cbombinv
