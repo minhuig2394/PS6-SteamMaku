@@ -1,10 +1,11 @@
 (*move takes in a position, direction, and speed (focused or unfocused) 
   and returns a position, which allows us to update the position
   of the player*)
+
 val move_player: Definitions.position -> 
   (Definitions.direction * Definitions.direction) -> bool -> 
     Definitions.position
-
+  
 val g_result: int -> int -> int -> int -> float -> Definitions.result
 
 val shoot: Definitions.bullet_type -> Definitions.position -> 
@@ -19,4 +20,6 @@ val newpower: int -> bool -> int -> int
 
 val newinvinc: bool -> int -> int
 
-val charge: int -> int -> bool -> int -> int
+val charge: int -> int -> bool -> int -> bool -> int
+
+val newbombinv: bool -> bool -> int -> bool
