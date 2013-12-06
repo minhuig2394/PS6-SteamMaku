@@ -57,7 +57,7 @@ let newinvinc hit mercinv curr =
 
   
 let newpower lost mercinv currpow npow = 
-  if (lost = true && merc = false) then 
+  if (lost = true && mercinv = false) then 
    	(currpow + npow) / 2 else currpow + npow
      	
 
