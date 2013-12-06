@@ -174,13 +174,12 @@ let determine (hitufo: bool)(h:bullet) (player:player_char)
             (add_update (DeleteBullet h.b_id); 
             if player.p_color = Blue then 
             (updates.bgraze_pts <- updates.bgraze_pts + 1;update t pwr)
-            else (updates.rgraze_pts <- updates.rgraze_pts + 1;update t pwr)))
+            else (updates.rgraze_pts <- updates.rgraze_pts + 1;update t pwr))
           else 
             (updates.bullet_lst <- (set_pos h)::updates.bullet_lst;
             if player.p_color = Blue then 
-              (updates.bgraze_pts <- updates.bgraze_pts + 1;
-               update t pwr)
-            else (updates.rgraze_pts <- updates.rgraze_pts + 1;update t pwr))
+              (updates.bgraze_pts <- updates.bgraze_pts + 1;update t pwr)
+            else (updates.rgraze_pts <- updates.rgraze_pts + 1;update t pwr)))
         else
           if hitufo = true then (add_update (DeleteBullet h.b_id);update t pwr) 
           else
