@@ -34,6 +34,7 @@ let collide (center1:position) (r1:int) (center2:position) (r2:int):bool =
 let set_pos (b:bullet):bullet = 
   let new_pos = add_v b.b_pos b.b_vel in 
     (add_update (MoveBullet (b.b_id,new_pos)));
+    print_endline "bullet number "; print_int b.b_id; print_endline "moved";
 	{b with 
 		b_pos = new_pos;
 		b_vel = add_v b.b_vel b.b_accel}
@@ -210,10 +211,11 @@ print_endline "updating powers";
   let updates,pwers = 
     (update_bullets updlst.red updlst.blue updlst.rinvincible 
       updlst.binvincible updlst.blst updlst.ufolst updlst.pwrlst) in 
+    print_endline "Number of bullets: "; print_int (List.length updates.bullet_lst);
   let rec update_powers pwrs plst= 
     match pwrs with 
     |h::t -> 
-    if out h then (add_update (DeleteBullet h.b_id);print_endline "bullet out";update_powers t plst)
+    if out h then (add_update (DeleteBullet h.b_id);update_powers t plst)
     else 
       if hit h updlst.red && not (hit h updlst.blue) then 
         (add_update (DeleteBullet h.b_id);
@@ -233,7 +235,7 @@ print_endline "updating powers";
         else
         update_powers t ((set_pos h)::plst)
     |[] -> updates.powerlst <- plst;updates
-  in update_powers ((updlst.pwrlst)@pwers) []
+  in update_powers (pwers) []
 (*delete_all clears the gui of bullets*)
 let delete_all (blst:bullet list): unit = 
   List.iter (fun elem -> add_update (DeleteBullet elem.b_id)) blst
