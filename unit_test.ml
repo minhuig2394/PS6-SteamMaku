@@ -240,7 +240,7 @@ let update_bullets_test2 =
     rgraze_pts = 0; 
     bgraze_pts= 0; 
     bullet_lst = []; 
-    ulst = [{ufo3 with u_blue_hits = 1}]; 
+    ulst = [{ufo3 with u_blue_hits = 1;u_pos = 25.,25.}]; 
     powerlst= [];
     rpower_pts= 0;
     bpower_pts= 0;
@@ -254,7 +254,7 @@ let update_bullets_test3 =
     rgraze_pts = 0; 
     bgraze_pts= 0; 
     bullet_lst = []; 
-    ulst = [{ufo3 with u_blue_hits = 1}]; 
+    ulst = [{ufo3 with u_blue_hits = 1;u_pos = 25.,25.}]; 
     powerlst= [];
     rpower_pts= 0;
     bpower_pts= 0;
@@ -276,7 +276,7 @@ let update_all_test =
     u.rgraze_pts = 0 && 
     u.bgraze_pts= 0 && 
     u.bullet_lst = [] &&
-    u.ulst = [{ufo3 with u_blue_hits = 1}] && 
+    u.ulst = [{ufo3 with u_blue_hits = 1;u_pos = 25.,25.}] && 
     u.powerlst= [] &&
     u.rpower_pts= 0 &&
     u.bpower_pts= 0 
