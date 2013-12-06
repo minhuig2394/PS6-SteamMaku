@@ -161,7 +161,7 @@ let determine (hitufo: bool)(h:bullet) (player:player_char)
     else 
       if hit h player then 
         if player.p_color = Blue then (updates.blost <- true;update t pwr)
-        else (updates.blost <- true; update t pwr)
+        else (updates.rlost <- true; update t pwr)
       else 
         if grazed h player then 
           (add_update (Graze);
@@ -182,16 +182,16 @@ let update_bullets (rp:player_char) (bp:player_char) (rinvincible :bool)
     bullet_lst = []; ulst = ufolst; powerlst= [];rpower_pts= 0;
     bpower_pts= 0;} in 
   let rec update bulletlst pwr= 
-    match updates.bullet_lst with 
+    match bulletlst with 
     |h::t -> 
-      let hit,pow,u = (update_ufos h updates) in
+      let hitufo,pow,u = (update_ufos h updates) in
       let pwr =       
       (List.fold_left 
         (fun acc elem -> (create_power elem rp.p_pos bp.p_pos)@acc) pwr pow) 
     in updates.ulst <- u; begin 
       match h.b_color with
-      |Red -> determine hit h bp binvincible update updates t pwr
-      |Blue -> determine hit h rp binvincible update updates t pwr
+      |Red -> determine hitufo h bp binvincible update updates t pwr
+      |Blue -> determine hitufo h rp binvincible update updates t pwr
       end
     |[] -> (updates,pwr)
   in update blst pwr
