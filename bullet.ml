@@ -62,6 +62,7 @@ let init_vel (speed:int) (target:position) (pos:position):velocity=
 * of spread bullets*)
 let create_spread (target:position) (plpos:position) 
   (pcolor:color) (acc:acceleration): bullet list = 
+  print_endline "spread created";
   let ang = deg_to_rad (float_of_int (360/cSPREAD_NUM)) in 
   let initial_velocity = init_vel cSPREAD_SPEED target plpos in
 	let rec screate n angle lst = 
@@ -83,6 +84,7 @@ let create_spread (target:position) (plpos:position)
 (*helper function creates 1 bubble and returns as a list with a single bubble*)
 let create_bubble  (target:position) (plpos:position) 
   (pcolor:color) (acc:acceleration): bullet list= 
+  print_endline "bubble created";
 	let b = {b_type = Bubble;
 				b_id = next_available_id ();
 				b_pos = plpos;
@@ -98,6 +100,7 @@ let create_bubble  (target:position) (plpos:position)
 * the trails are progressively increasing*)
   let create_trail (plpos:position) (pcolor:color) 
   (target:position) (acc:acceleration): bullet list= 
+  print_endline "trail created";
   let ang = deg_to_rad (float_of_int cTRAIL_ANGLE) in 
   let rec trail nth angle lst= 
     if nth > 0 then 
@@ -126,7 +129,7 @@ let create_bullet (b:bullet_type) (target:position)
     (plpos:position) (pcolor:color) (acc:acceleration)= 
 	match b with 
 	|Spread -> create_spread  target plpos pcolor acc 
-	|Bubble -> create_spread  target plpos pcolor acc  
+	|Bubble -> create_bubble  target plpos pcolor acc  
 	|Trail ->  create_trail  plpos pcolor target acc
   |Power -> failwith "Error: Power not a bullet"
 
@@ -134,6 +137,7 @@ let create_bullet (b:bullet_type) (target:position)
 *type *)
 let update_ufos (bul:bullet) (updates:total_update)= 
   let remove_ufo updated_ufo acc= 
+  print_endline "updating ufos";
     if (updated_ufo.u_red_hits + updated_ufo.u_blue_hits) >= cUFO_HITS then
     ((add_update (DeleteUFO updated_ufo.u_id));
       (updated_ufo::(fst acc)),(snd acc))
@@ -180,6 +184,7 @@ let determine (hitufo: bool)(h:bullet) (player:player_char)
 (*helper function handles all bullet collisions*)
 let update_bullets (rp:player_char) (bp:player_char) (rinvincible :bool) 
   (binvincible:bool) (blst: bullet list) (ufolst: ufo list) (pwr: power list)=
+  print_endline "updating bullet collisions";
   let updates = 
   {rlost =false; blost =false; rgraze_pts = 0; bgraze_pts= 0; 
     bullet_lst = []; ulst = ufolst; powerlst= [];rpower_pts= 0;
@@ -201,6 +206,7 @@ let update_bullets (rp:player_char) (bp:player_char) (rinvincible :bool)
 (*update_all updlst takes in an update_info list and returns a total_update record
 *of all updated information*)
 let update_all (updlst: update_info): total_update= 
+print_endline "updating powers";
   let updates,pwers = 
     (update_bullets updlst.red updlst.blue updlst.rinvincible 
       updlst.binvincible updlst.blst updlst.ufolst updlst.pwrlst) in 
