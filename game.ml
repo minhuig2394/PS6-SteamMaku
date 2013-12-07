@@ -202,6 +202,7 @@ let handle_time game =
      
      powers = urecord.powerlst
    } in
+   delete_all (urecord.delete_bullets);
    delete_all (if (urecord.rlost = true && game.redmercinv = false) || 
      	(urecord.blost = true && game.bluemercinv = false) 
   then urecord.bullet_lst else []);
