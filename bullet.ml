@@ -172,7 +172,7 @@ let determine (hitufo: bool)(h:bullet) (player:player_char)
     else 
         if grazed h player then 
           (add_update (Graze);
-          if invincible = true then 
+          if invincible = true || hitufo = true then 
             if player.p_color = Blue then 
             (delete h;updates.bgraze_pts <- updates.bgraze_pts + 1;update t pwr)
             else (delete h;updates.rgraze_pts <- updates.rgraze_pts + 1;update t pwr)
