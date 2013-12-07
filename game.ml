@@ -78,7 +78,7 @@ let init_game () : game =
      bluepower = 0;
      ufospawntimer = cUFO_SPAWN_INTERVAL;
      ufomovetimer = cUFO_MOVE_INTERVAL;
-     ufos = create_ufo()::[];
+     ufos = [];
      powers = [];
    } in
   add_update (AddPlayer (init.redid, Red, init.redpos));
