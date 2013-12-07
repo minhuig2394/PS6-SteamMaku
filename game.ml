@@ -136,8 +136,10 @@ let handle_time game =
      redpos = redp.p_pos;
      bluepos = bluep.p_pos;
      
-     redpower = newpower urecord.rlost game.redmercinv game.redpower urecord.rpower_pts;
-     bluepower = newpower urecord.blost game.bluemercinv game.bluepower urecord.bpower_pts;
+     redpower = 
+     	newpower urecord.rlost game.redmercinv game.redpower urecord.rpower_pts;
+     bluepower = 
+     	newpower urecord.blost game.bluemercinv game.bluepower urecord.bpower_pts;
 
      redcharge = 
      charge game.redcharge game.redpower urecord.rlost game.redmercinv
@@ -147,9 +149,13 @@ let handle_time game =
        urecord.bpower_pts game.bluebombinv;
      
      redlife = 
-     	if (urecord.rlost = true && game.redmercinv = false) then game.redlife - 1 else game.redlife;
+     	if (urecord.rlost = true && game.redmercinv = false) 
+     	  then game.redlife - 1 
+     	else game.redlife;
      bluelife = 
-     	if (urecord.blost = true && game.bluemercinv = false) then game.bluelife - 1 else game.bluelife;
+     	if (urecord.blost = true && game.bluemercinv = false) 
+     	  then game.bluelife - 1 
+     	else game.bluelife;
      
      redscore = newscore urecord.blost game.bluemercinv urecord.rgraze_pts 
        urecord.rpower_pts game.redscore;
@@ -159,16 +165,22 @@ let handle_time game =
      redinvinc = newinvinc urecord.rlost game.redmercinv game.redinvinc;
      blueinvinc = newinvinc urecord.blost game.bluemercinv game.blueinvinc;
      
-     redmercinv = if (urecord.rlost = true && game.redmercinv = false) then true else false;
-     bluemercinv = if (urecord.blost = true && game.bluemercinv = false) then true else false;
+     redmercinv = 
+     	if (urecord.rlost = true && game.redmercinv = false) then true else false;
+     bluemercinv = 
+     	if (urecord.blost = true && game.bluemercinv = false) then true else false;
      
      redbombs = 
-     if (urecord.rlost = true && game.redmercinv = false) then cINITIAL_BOMBS else game.redbombs;
+     	if (urecord.rlost = true && game.redmercinv = false) 
+     	then cINITIAL_BOMBS else game.redbombs;
      bluebombs = 
-     if (urecord.blost = true && game.bluemercinv = false) then cINITIAL_BOMBS else game.bluebombs;
+     	if (urecord.blost = true && game.bluemercinv = false) 
+     	then cINITIAL_BOMBS else game.bluebombs;
 
-     redbombinv = newbombinv game.redbombinv urecord.rlost game.redmercinv game.redinvinc;
-     bluebombinv = newbombinv game.bluebombinv urecord.blost game.bluemercinv game.blueinvinc;
+     redbombinv = 
+     	newbombinv game.redbombinv urecord.rlost game.redmercinv game.redinvinc;
+     bluebombinv = 
+     	newbombinv game.bluebombinv urecord.blost game.bluemercinv game.blueinvinc;
      
      bullets = if (urecord.rlost = true && game.redmercinv = false) || 
      	(urecord.blost = true && game.bluemercinv = false) 
