@@ -151,8 +151,8 @@ let update_ufos (bul:bullet) (updates:total_update)=
         {elem with u_red_hits = (elem.u_red_hits + 1)} 
         else {elem with u_blue_hits = (elem.u_blue_hits + 1)})
       in 
-        (remove_ufo updated_ufo acc)
-      else (fst acc),((set_pos_ufo elem)::(snd acc))) ([],[]) updates.ulst in 
+         (remove_ufo updated_ufo acc)  
+      else (fst acc,(set_pos_ufo elem)::(snd acc))) ([],[]) updates.ulst in 
         if List.length p > 0 then true,p,u else false,p,u 
 (*helper functions determines which bullets are kept, what points to add*)
 let determine (hitufo: bool)(h:bullet) (player:player_char) 
