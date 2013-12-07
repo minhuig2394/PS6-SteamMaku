@@ -203,8 +203,8 @@ let handle_time game =
   add_update (SetPower (Blue, updated.bluepower));
   add_update (SetCharge (Red, updated.redcharge));
   add_update (SetCharge (Blue, updated.bluecharge));
-  add_update (SetBombs (Red, updated.redbomb));
-  add_update (SetBombs (Blue, updated.bluebomb));
+  add_update (SetBombs (Red, updated.redbombs));
+  add_update (SetBombs (Blue, updated.bluebombs));
   let r = (g_result updated.redlife updated.bluelife updated.redscore
       updated.bluescore updated.timer) in
   match r with
