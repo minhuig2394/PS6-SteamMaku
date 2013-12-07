@@ -152,7 +152,7 @@ let update_ufos (bul:bullet) (updates:total_update)=
         else {elem with u_blue_hits = (elem.u_blue_hits + 1)})
       in 
          (remove_ufo updated_ufo acc)  
-      else (fst acc,(set_pos_ufo elem)::(snd acc))) ([],[]) updates.ulst in 
+      else (fst acc, elem::snd acc)) ([],[]) updates.ulst in 
         if List.length p > 0 then true,p,u else false,p,u 
 
 let delete (bul:bullet) = add_update (DeleteBullet bul.b_id)
@@ -165,19 +165,17 @@ let determine (hitufo: bool)(h:bullet) (player:player_char)
     (delete h;update t pwr)
   else 
     if hit h player then 
-      (delete h;
-      if invincible = true then (update t pwr)
+      if invincible = true then (delete h;update t pwr)
       else 
-        if player.p_color = Blue then (updates.blost <- true;update t pwr)
-        else (updates.rlost <- true;update t pwr))
+        if player.p_color = Blue then (delete h;updates.blost <- true;update t pwr)
+        else (delete h;updates.rlost <- true;update t pwr)
     else 
         if grazed h player then 
           (add_update (Graze);
           if invincible = true then 
-            (delete h;
             if player.p_color = Blue then 
-            (updates.bgraze_pts <- updates.bgraze_pts + 1;update t pwr)
-            else (updates.rgraze_pts <- updates.rgraze_pts + 1;update t pwr))
+            (delete h;updates.bgraze_pts <- updates.bgraze_pts + 1;update t pwr)
+            else (delete h;updates.rgraze_pts <- updates.rgraze_pts + 1;update t pwr)
           else 
             (updates.bullet_lst <- (set_pos h)::updates.bullet_lst;
             if player.p_color = Blue then 
@@ -244,4 +242,4 @@ print_endline "updating powers";
   in update_powers (pwers) []
 (*delete_all clears the gui of bullets*)
 let delete_all (blst:bullet list): unit = 
-  List.iter (fun elem -> delete elem)) blst
+  List.iter (fun elem -> delete elem) blst
