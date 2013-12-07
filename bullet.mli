@@ -39,15 +39,6 @@ val update_all: update_info -> total_update
 (*delete_all removes all bullets from the gui, given the bullet list*)
 val delete_all: Definitions.bullet list -> unit 
 
-type update_info = 
-  { red: Definitions.player_char; 
-    blue: Definitions.player_char;
-    rinvincible :bool; 
-    binvincible:bool; 
-    blst: Definitions.bullet list; 
-    ufolst: Definitions.ufo list; 
-    pwrlst: Definitions.power list}
-
 (*create_bullet takes in a bullet_type, a target position, 
 * a player color, and acceleration 
 * and returns a list of bullets with that bullet_type*)
