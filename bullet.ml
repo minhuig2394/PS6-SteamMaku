@@ -139,13 +139,12 @@ let update_ufos (bul:bullet) (updates:total_update)=
     let p,u = List.fold_left (fun acc elem -> 
       if (hit_ufo bul elem) then 
       let updated_ufo = 
-        (print_endline "ufo hit!";if bul.b_color = Red then 
+        (if bul.b_color = Red then 
         {elem with u_red_hits = (elem.u_red_hits + 1)} 
         else {elem with u_blue_hits = (elem.u_blue_hits + 1)})
       in 
         if (updated_ufo.u_red_hits + updated_ufo.u_blue_hits) >= cUFO_HITS then
-        ((add_update (DeleteUFO updated_ufo.u_id));print_endline "ufo took ";
-            print_int (elem.u_red_hits + elem.u_blue_hits);
+        ((add_update (DeleteUFO updated_ufo.u_id));
         (updated_ufo::(fst acc)),(snd acc))
         else (fst acc),(updated_ufo)::(snd acc) 
       else 
@@ -218,14 +217,14 @@ let update_bullets (rp:player_char) (bp:player_char) (rinvincible :bool)
       |Red -> determine hitufo h bp binvincible update updates t pwr bullst dlst
       |Blue -> determine hitufo h rp rinvincible update updates t pwr bullst dlst
       end
-    |[] -> (updates.ulst <- (update_all_ufos updates.ulst);updates.delete_bullets <- dlst);
+    |[] -> (updates.ulst <- (update_all_ufos updates.ulst);
+       updates.delete_bullets <- dlst);
       (updates.bullet_lst <- bullst); (updates,pwr)
   in update blst pwr [] []
 
 (*update_all updlst takes in an update_info list and returns a total_update record
 *of all updated information*)
 let update_all (updlst: update_info): total_update= 
-print_endline "updating powers";
   let updates,pwers = 
     (update_bullets updlst.red updlst.blue updlst.rinvincible 
       updlst.binvincible updlst.blst updlst.ufolst updlst.pwrlst) in 
